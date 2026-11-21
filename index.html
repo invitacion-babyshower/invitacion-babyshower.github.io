@@ -76,15 +76,17 @@ button,input{font:inherit;color:inherit}
 #e4 .ositos-globo{bottom:2%;right:3%;height:46%}
 /* Escena 5 */
 #e5 .avion{top:2%;left:14%;width:70%}
-#e5 .bloque{position:absolute;top:27%;left:6%;right:6%;display:grid;gap:.5rem;justify-items:center;text-align:center}
-#e5 .pregunta{font-size:clamp(2.4rem,11vw,3.3rem);color:var(--caramelo)}
-#e5 .fecha{font-size:clamp(1.5rem,6.6vw,2.05rem);color:var(--cacao)}
-#e5 .lugar{font-style:italic;font-size:clamp(1.05rem,4.6vw,1.3rem)}
-#e5 .ositos-contorno{bottom:4%;left:27%;width:46%}
-.cuenta{display:flex;gap:.5rem;margin-top:.3rem}
-.cuenta div{min-width:58px;padding:.45rem .3rem;border-radius:14px;background:rgba(255,255,255,.75);box-shadow:var(--sombra)}
-.cuenta b{display:block;font-size:1.35rem;font-weight:500}
-.cuenta small{font-size:.78rem;letter-spacing:.06em;color:var(--caramelo)}
+#e5 .bloque{position:absolute;top:23%;left:6%;right:6%;display:grid;gap:clamp(.5rem,1.6svh,1.1rem);justify-items:center;text-align:center}
+#e5 .pregunta{font-size:clamp(2.5rem,11.5vw,3.5rem);color:var(--caramelo);margin-bottom:clamp(.2rem,1.4svh,.9rem)}
+#e5 .fecha{font-size:clamp(1.65rem,7.4vw,2.4rem);color:var(--cacao);line-height:1.15}
+#e5 .hora{font-size:clamp(1.25rem,5.4vw,1.65rem);color:var(--cacao)}
+#e5 .lugar{font-style:italic;font-size:clamp(1.15rem,5vw,1.45rem);line-height:1.35;margin-top:clamp(.2rem,1svh,.6rem)}
+#e5 .btn{margin-top:clamp(.3rem,1.6svh,1rem)}
+#e5 .ositos-contorno{bottom:3%;left:30%;width:40%}
+.cuenta{display:flex;gap:clamp(.6rem,3vw,1rem);margin-top:clamp(.3rem,1.4svh,.9rem)}
+.cuenta div{min-width:clamp(66px,19vw,88px);padding:clamp(.5rem,1.3svh,.85rem) .4rem;border-radius:16px;background:rgba(255,255,255,.75);box-shadow:var(--sombra)}
+.cuenta b{display:block;font-size:clamp(1.45rem,6.2vw,1.95rem);font-weight:500;line-height:1.1}
+.cuenta small{font-size:clamp(.8rem,3.2vw,.92rem);letter-spacing:.06em;color:var(--caramelo)}
 /* Escena 6 */
 #e6 .osito-girl{top:10%;left:2%;height:36%}
 #e6 .t-girl{position:absolute;top:21%;right:5%;width:50%;text-align:center}
@@ -92,7 +94,21 @@ button,input{font:inherit;color:inherit}
 #e6 .t-boy{position:absolute;top:53%;left:5%;width:50%;text-align:center}
 .team{font-family:var(--script);font-size:clamp(2.3rem,10.5vw,3.1rem);line-height:1}
 .regalo{font-variant:small-caps;letter-spacing:.06em;font-size:clamp(1.1rem,4.8vw,1.35rem);color:var(--cacao)}
-#e6 .esperamos{top:auto;bottom:9%;font-size:clamp(2.6rem,12vw,3.5rem);color:var(--caramelo)}
+#e6 .esperamos{top:auto;bottom:11%;font-size:clamp(2.6rem,12vw,3.5rem);color:var(--caramelo)}
+
+/* ---------- Movimiento continuo ---------- */
+.flota{animation:flota 3.2s ease-in-out infinite}
+.flota.lenta{animation-duration:5.5s}
+@keyframes flota{50%{translate:0 -14px;rotate:1.2deg}}
+.hamaca{transform-origin:top center;animation:hamaca 2.6s ease-in-out infinite}
+@keyframes hamaca{0%,100%{rotate:-2.5deg}50%{rotate:2.5deg}}
+.escena:not(.activa) .flota,.escena:not(.activa) .hamaca{animation-play-state:paused}
+
+/* ---------- Ir a la siguiente parte ---------- */
+.siguiente{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2;width:46px;height:46px;margin:0 auto;border:0;border-radius:50%;
+  background:rgba(255,255,255,.8);box-shadow:var(--sombra);color:var(--caramelo);font-size:1.5rem;line-height:1;cursor:pointer;animation:invita 2s ease-in-out infinite}
+@keyframes invita{50%{translate:0 6px}}
+.siguiente:focus-visible{outline:3px solid var(--celeste-txt);outline-offset:3px}
 
 /* ---------- Botones ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.7rem 1.6rem;border:0;border-radius:999px;background:var(--cacao);color:#fff;font-weight:500;cursor:pointer;text-decoration:none;box-shadow:var(--sombra);transition:transform .2s}
@@ -127,9 +143,9 @@ button,input{font:inherit;color:inherit}
 .opcion[aria-pressed="true"].no{background:var(--rosa);border-color:var(--rosa)}
 footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--caramelo)}
 
-.borrador{position:fixed;left:50%;bottom:10px;translate:-50% 0;z-index:45;background:var(--cacao);color:#fff;font-size:.8rem;padding:.3rem .8rem;border-radius:999px;opacity:.85;font-family:system-ui,sans-serif}
+.borrador{position:fixed;left:12px;top:max(14px,env(safe-area-inset-top));z-index:45;background:var(--cacao);color:#fff;font-size:.8rem;padding:.3rem .8rem;border-radius:999px;opacity:.85;font-family:system-ui,sans-serif}
 
-@media (max-height:680px){.texto{font-size:clamp(1.35rem,5.6vw,1.8rem)}}
+@media (max-height:680px){.texto{font-size:clamp(1.35rem,5.6vw,1.8rem)} #e5 .ositos-contorno{width:28%}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
@@ -150,7 +166,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
 <div id="portada">
   <div class="fondo" aria-hidden="true"></div>
   <div class="lienzo">
-    <img class="ilu centro globo-boceto" src="assets/img/globo-boceto.webp" onerror="ph(this)" alt="">
+    <img class="ilu centro globo-boceto flota" src="assets/img/globo-boceto.webp" onerror="ph(this)" alt="">
     <h1 class="texto split">Tenés una invitación muy especial</h1>
     <button class="btn" id="abrir">Abrir invitación ♡</button>
   </div>
@@ -165,57 +181,62 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 2 -->
   <section class="escena" id="e2">
     <div class="lienzo">
+      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
       <p class="texto split">Estamos muy emocionados de contarles que tendremos un nuevo integrante en la familia</p>
-      <img class="ilu centro osito-corazones" src="assets/img/osito-corazones.webp" onerror="ph(this)" alt="Osito con globos de corazón rosa y celeste">
+      <img class="ilu centro osito-corazones flota" src="assets/img/osito-corazones.webp" onerror="ph(this)" alt="Osito con globos de corazón rosa y celeste">
     </div>
   </section>
 
   <!-- ESCENA 3 -->
   <section class="escena" id="e3">
     <div class="lienzo">
-      <img class="ilu luna" src="assets/img/luna.webp" onerror="ph(this)" alt="">
+      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <img class="ilu luna flota lenta" src="assets/img/luna.webp" onerror="ph(this)" alt="">
       <p class="texto split">Estamos muy felices, ¡llegó el momento de conocer mi género!</p>
-      <img class="ilu bodies" src="assets/img/bodies.webp" onerror="ph(this)" alt="Bodies de bebé rosa y celeste">
+      <img class="ilu bodies hamaca" src="assets/img/bodies.webp" onerror="ph(this)" alt="Bodies de bebé rosa y celeste">
     </div>
   </section>
 
   <!-- ESCENA 4 -->
   <section class="escena" id="e4">
     <div class="lienzo">
+      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
       <div class="bloque">
         <h2 class="texto split">¡Queremos vivirlo con vos!</h2>
         <p class="texto chico split">Mis papis</p>
         <p class="texto script papas split">José &amp; Johanna</p>
         <p class="texto chico split">te invitan a descubrirlo juntos</p>
       </div>
-      <img class="ilu ositos-globo" src="assets/img/ositos-globo.webp" onerror="ph(this)" alt="Dos ositos en un globo aerostático">
+      <img class="ilu ositos-globo flota lenta" src="assets/img/ositos-globo.webp" onerror="ph(this)" alt="Dos ositos en un globo aerostático">
     </div>
   </section>
 
   <!-- ESCENA 5 -->
   <section class="escena" id="e5">
     <div class="lienzo">
-      <img class="ilu avion" src="assets/img/avion.webp" onerror="ph(this)" alt="">
+      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <img class="ilu avion flota" src="assets/img/avion.webp" onerror="ph(this)" alt="">
       <div class="bloque">
         <h2 class="script pregunta split">¿Será <span class="rosa">niña</span> o <span class="celeste">niño</span>?</h2>
         <p class="fecha split">Domingo 17 de enero</p>
-        <p class="texto chico split" style="position:static">de 14 a 17 hs</p>
-        <p class="lugar split">Gemma Eventos · Av. Caseros 3671</p>
+        <p class="hora split">de 14 a 17 hs</p>
+        <p class="lugar split">Gemma Eventos<br>Av. Caseros 3671</p>
         <a class="btn btn-sec aparece" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Gemma+Eventos+Av.+Caseros+3671">Cómo llegar</a>
         <div class="cuenta aparece" aria-label="Cuenta regresiva">
           <div><b id="d">--</b><small>días</small></div><div><b id="h">--</b><small>horas</small></div><div><b id="m">--</b><small>min</small></div>
         </div>
       </div>
-      <img class="ilu ositos-contorno" src="assets/img/ositos-contorno.webp" onerror="ph(this)" alt="">
+      <img class="ilu ositos-contorno flota lenta" src="assets/img/ositos-contorno.webp" onerror="ph(this)" alt="">
     </div>
   </section>
 
   <!-- ESCENA 6 -->
   <section class="escena" id="e6">
     <div class="lienzo">
-      <img class="ilu osito-girl" src="assets/img/osito-girl.webp" onerror="ph(this)" alt="Osito con globos rosas">
+      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <img class="ilu osito-girl flota" src="assets/img/osito-girl.webp" onerror="ph(this)" alt="Osito con globos rosas">
       <div class="t-girl"><p class="team rosa split">Team Girl</p><p class="regalo split">Pañales</p></div>
-      <img class="ilu osito-boy" src="assets/img/osito-boy.webp" onerror="ph(this)" alt="Osito con globos celestes">
+      <img class="ilu osito-boy flota" src="assets/img/osito-boy.webp" onerror="ph(this)" alt="Osito con globos celestes">
       <div class="t-boy"><p class="team celeste split">Team Boy</p><p class="regalo split">Toallitas húmedas</p></div>
       <p class="texto script esperamos split">¡Te esperamos!</p>
     </div>
@@ -296,7 +317,7 @@ btnM.onclick = () => musica(btnM.getAttribute("aria-pressed") !== "true");
 const palabras = el => SplitText.create(el, {type: "words"}).words;
 const entraTexto = (tl, sel, at) => $$(sel).forEach((el, i) =>
   tl.from(palabras(el), {opacity: 0, y: 18, filter: "blur(6px)", duration: .7, stagger: .13, ease: "power2.out"}, i ? ">-0.2" : at));
-const flotar = el => gsap.to(el, {y: "-=12", rotation: 1.5, duration: 2.8, yoyo: true, repeat: -1, ease: "sine.inOut"});
+// El flotado continuo es CSS (.flota usa translate/rotate) y GSAP mueve el transform: no se pisan.
 
 function abrir(){
   musica(true);
@@ -311,37 +332,44 @@ $("#abrir").onclick = abrir;
 
 function escenas(){
   gsap.registerPlugin(ScrollTrigger);
-  const escena = (id, armar) => {
-    const tl = gsap.timeline({paused: true});
+  // Cada escena: la entrada se repite cada vez que llegás (bajando o subiendo);
+  // el loop (ej. el avión) corre solo mientras la escena está en pantalla.
+  const escena = (id, armar, armarLoop) => {
+    const sec = $(id), tl = gsap.timeline({paused: true});
     armar(tl);
-    ScrollTrigger.create({trigger: id, start: "top 60%", once: true, onEnter: () => tl.play()});
+    const loop = armarLoop && armarLoop(gsap.timeline({paused: true, repeat: -1}));
+    const on = () => { sec.classList.add("activa"); tl.restart(); loop && loop.play(); };
+    const off = () => { sec.classList.remove("activa"); loop && loop.pause(); };
+    ScrollTrigger.create({trigger: sec, start: "top 55%", end: "bottom 45%", onEnter: on, onEnterBack: on, onLeave: off, onLeaveBack: off});
   };
 
   escena("#e2", tl => {
-    tl.from("#e2 .osito-corazones", {y: "-75vh", duration: 2.4, ease: "sine.out", onComplete: () => flotar("#e2 .osito-corazones")}, 0);
+    tl.from("#e2 .osito-corazones", {y: "-75vh", duration: 2.4, ease: "sine.out"}, 0);
     entraTexto(tl, "#e2 .split", .5);
   });
   escena("#e3", tl => {
-    tl.from("#e3 .luna", {x: -80, y: -40, opacity: 0, duration: 1.4, ease: "power2.out", onComplete: () => flotar("#e3 .luna")}, 0);
+    tl.from("#e3 .luna", {x: -80, y: -40, opacity: 0, duration: 1.4, ease: "power2.out"}, 0);
     entraTexto(tl, "#e3 .split", .3);
-    tl.from("#e3 .bodies", {opacity: 0, y: -20, duration: .8}, ">-0.3")
-      .to("#e3 .bodies", {rotation: 3, duration: 1.6, yoyo: true, repeat: -1, ease: "sine.inOut"});
+    tl.from("#e3 .bodies", {opacity: 0, y: -20, duration: .8}, ">-0.3");
   });
   escena("#e4", tl => {
-    tl.from("#e4 .ositos-globo", {y: "60vh", x: 40, duration: 2.6, ease: "power1.out", onComplete: () => flotar("#e4 .ositos-globo")}, 0);
+    tl.from("#e4 .ositos-globo", {y: "60vh", x: 40, duration: 2.6, ease: "power1.out"}, 0);
     entraTexto(tl, "#e4 .split", .4);
   });
   escena("#e5", tl => {
-    tl.fromTo(".destello", {opacity: 0}, {opacity: .9, duration: .35, yoyo: true, repeat: 1, immediateRender: false}, 0)
-      .from("#e5 .avion", {x: "-110vw", y: 40, rotation: -6, duration: 2.6, ease: "power2.out", onComplete: () => flotar("#e5 .avion")}, .1);
-    entraTexto(tl, "#e5 .split", .8);
+    tl.fromTo(".destello", {opacity: 0}, {opacity: .9, duration: .35, yoyo: true, repeat: 1, immediateRender: false}, 0);
+    entraTexto(tl, "#e5 .split", .5);
     tl.from("#e5 .aparece", {opacity: 0, y: 14, stagger: .2, duration: .6}, ">-0.2")
       .from("#e5 .ositos-contorno", {opacity: 0, scale: .9, duration: 1.4}, "<");
-  });
+  }, loop => loop
+    // El avión entra despacio, se queda planeando y sale por la derecha; repite
+    .fromTo("#e5 .avion", {x: "-120vw"}, {x: 0, duration: 3.5, ease: "power2.out"})
+    .to("#e5 .avion", {x: "120vw", duration: 3.5, ease: "power2.in"}, "+=2.5")
+    .set({}, {}, "+=1"));
   escena("#e6", tl => {
     tl.fromTo(".corazon", {scale: .2, opacity: .95}, {scale: 14, opacity: 0, duration: 1.3, ease: "power2.in", immediateRender: false}, 0)
-      .from("#e6 .osito-girl", {x: "-60vw", y: 60, duration: 1.8, ease: "power2.out", onComplete: () => flotar("#e6 .osito-girl")}, .5)
-      .from("#e6 .osito-boy", {x: "60vw", y: 60, duration: 1.8, ease: "power2.out", onComplete: () => flotar("#e6 .osito-boy")}, .8);
+      .from("#e6 .osito-girl", {x: "-60vw", y: 60, duration: 1.8, ease: "power2.out"}, .5)
+      .from("#e6 .osito-boy", {x: "60vw", y: 60, duration: 1.8, ease: "power2.out"}, .8);
     entraTexto(tl, "#e6 .split", 1.2);
   });
 
@@ -354,10 +382,14 @@ function escenas(){
 if (!RM) document.fonts.ready.then(() => {
   gsap.registerPlugin(SplitText);
   gsap.timeline()
-    .from(".globo-boceto", {y: 60, opacity: 0, duration: 2, ease: "sine.out", onComplete: () => flotar(".globo-boceto")})
+    .from(".globo-boceto", {y: 60, opacity: 0, duration: 2, ease: "sine.out"})
     .from(palabras($("#portada .texto")), {opacity: 0, y: 18, filter: "blur(6px)", duration: .7, stagger: .15, ease: "power2.out"}, .6)
     .from("#abrir", {opacity: 0, y: 12, duration: .6}, ">-0.1");
 });
+
+// ---------- Botón "siguiente" de cada escena ----------
+$$(".siguiente").forEach(b => b.onclick = () =>
+  b.closest("section").nextElementSibling.scrollIntoView({behavior: RM ? "auto" : "smooth"}));
 
 // ---------- WhatsApp ----------
 const wspMsg = encodeURIComponent("¡Hola! Te escribo por el Baby Shower y Revelación de José y Johanna 🧸🎈. Tengo una consulta: ");
