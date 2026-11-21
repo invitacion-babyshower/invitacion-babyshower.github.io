@@ -33,7 +33,7 @@ function ph(img){ img.onerror = null; img.style.display = "none"; }
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+html{scroll-behavior:smooth}
 body{font-family:var(--serif);color:var(--cacao);background:var(--crema);line-height:1.4;overflow-x:hidden}
 body.bloqueado{overflow:hidden}
 img{display:block;max-width:100%}
@@ -64,7 +64,7 @@ button,input{font:inherit;color:inherit}
 #abrir{position:absolute;left:0;right:0;top:78%;width:fit-content;margin:0 auto}
 
 /* ---------- Escenas ---------- */
-.escena{position:relative;min-height:100svh;scroll-snap-align:start;overflow:hidden}
+.escena{position:relative;min-height:100svh;overflow:hidden}
 .lienzo{position:relative;width:min(100%,520px);height:100svh;min-height:600px;margin:0 auto}
 .ilu{position:absolute;pointer-events:none;width:auto}
 .centro{left:0;right:0;margin:0 auto}
@@ -138,8 +138,8 @@ button,input{font:inherit;color:inherit}
 .corazon{position:fixed;left:50%;top:50%;z-index:30;width:120px;margin:-60px 0 0 -60px;pointer-events:none;opacity:0;fill:var(--rosa);filter:drop-shadow(0 0 30px #fff)}
 
 /* ---------- Confirmación y consultas ---------- */
-.seccion{position:relative;min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:4rem 1.25rem}
-.panel{width:min(100%,480px);background:rgba(255,255,255,.88);backdrop-filter:blur(4px);border-radius:26px;padding:2rem 1.25rem;box-shadow:var(--sombra);display:grid;gap:1rem;text-align:center}
+.seccion{position:relative;min-height:100svh;display:grid;place-items:center;padding:4rem 1.25rem}
+.panel{width:min(100%,480px);background:rgba(255,255,255,.88);border-radius:26px;padding:2rem 1.25rem;box-shadow:var(--sombra);display:grid;gap:1rem;text-align:center}
 .panel h2{font-size:clamp(1.7rem,7vw,2.2rem);font-weight:500;color:var(--caramelo)}
 .buscador{display:grid;gap:.4rem;text-align:left}
 .buscador input{width:100%;min-height:52px;padding:.75rem 1rem;border-radius:16px;border:2px solid var(--beige);background:#fff;font-size:1.05rem}
@@ -338,9 +338,11 @@ function musica(on){
 btnM.onclick = () => musica(btnM.getAttribute("aria-pressed") !== "true");
 
 // ---------- Animaciones ----------
+// En celulares el desenfoque palabra por palabra traba la animación (sobre todo en iPhone)
+const DESENFOQUE = matchMedia("(hover: hover)").matches ? {filter: "blur(6px)"} : {};
 const palabras = el => SplitText.create(el, {type: "words"}).words;
 const entraTexto = (tl, sel, at) => $$(sel).forEach((el, i) =>
-  tl.from(palabras(el), {opacity: 0, y: 18, filter: "blur(6px)", duration: .7, stagger: .13, ease: "power2.out"}, i ? ">-0.2" : at));
+  tl.from(palabras(el), {opacity: 0, y: 18, ...DESENFOQUE, duration: .7, stagger: .13, ease: "power2.out"}, i ? ">-0.2" : at));
 // El flotado continuo es CSS (.flota usa translate/rotate) y GSAP mueve el transform: no se pisan.
 
 function abrir(){
@@ -407,7 +409,7 @@ if (!RM) document.fonts.ready.then(() => {
   gsap.registerPlugin(SplitText);
   gsap.timeline()
     .from(".globo-boceto", {y: 60, opacity: 0, duration: 2, ease: "sine.out"})
-    .from(palabras($("#portada .texto")), {opacity: 0, y: 18, filter: "blur(6px)", duration: .7, stagger: .15, ease: "power2.out"}, .6)
+    .from(palabras($("#portada .texto")), {opacity: 0, y: 18, ...DESENFOQUE, duration: .7, stagger: .15, ease: "power2.out"}, .6)
     .from("#abrir", {opacity: 0, y: 12, duration: .6}, ">-0.1");
 });
 
