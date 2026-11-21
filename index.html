@@ -301,7 +301,7 @@ scrollTo(0, 0);
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 const WSP = "5491126799971";
 const EVENTO = new Date("2027-01-17T14:00:00-03:00");
-// shortcut: lista de ejemplo en el navegador; en la versión real se consulta a Apps Script y nunca se descarga la lista
+// Lista de ejemplo: solo se usa mientras API esté vacía
 const DEMO = [
   {g:"Familia Alfaro", n:"José", a:"Alfaro"}, {g:"Familia Alfaro", n:"Johanna", a:"Rivas"},
   {g:"Familia Pérez", n:"María", a:"Pérez"}, {g:"Familia Pérez", n:"Juan", a:"Pérez"}, {g:"Familia Pérez", n:"Sofía", a:"Pérez"},
@@ -421,52 +421,95 @@ $$(".siguiente").forEach(b => b.onclick = () =>
 const wspMsg = encodeURIComponent("¡Hola! Te escribo por el Baby Shower y Revelación de José y Johanna 🧸🎈. Tengo una consulta: ");
 $("#wsp").href = `https://wa.me/${WSP}?text=${wspMsg}`;
 
-// ---------- Confirmación (demo) ----------
+// ---------- Confirmación ----------
+// La búsqueda y el guardado los hace Apps Script sobre la planilla (backend/Codigo.gs): el navegador nunca recibe la lista completa.
+const API = ""; // URL de la aplicación web de Apps Script (termina en /exec)
 const norm = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-function buscar(q){
-  if (norm(q).replace(/\s/g, "").length < 3) return [];
-  const toks = norm(q).split(/\s+/);
-  return DEMO.filter(p => toks.every(t => norm(p.n + " " + p.a).includes(t)));
-}
-console.assert(buscar("jose").length === 1 && buscar("PEREZ").length === 3 && buscar("ma").length === 0 && buscar("jose alf").length === 1, "buscador");
+const esc = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+// shortcut: sin API usa la lista de ejemplo en memoria; se borra cuando la URL de Apps Script esté cargada
+const demo = {
+  buscar: q => { const toks = norm(q).split(/\s+/); return norm(q).replace(/\s/g, "").length < 3 ? [] : DEMO.filter(p => toks.every(t => norm(p.n + " " + p.a).includes(t))); },
+  grupo: g => ({abierto: true, miembros: DEMO.map((p, i) => ({...p, fila: i + 2, asiste: p.asiste || ""})).filter(p => p.g === g)}),
+  guardar: d => { d.respuestas.forEach(r => DEMO[r.fila - 2].asiste = r.asiste); return {ok: true}; }
+};
+console.assert(demo.buscar("jose").length === 1 && demo.buscar("PEREZ").length === 3 && demo.buscar("ma").length === 0 && demo.buscar("jose alf").length === 1, "buscador");
+
+async function api(accion, datos){
+  if (!API) return demo[accion](datos);
+  const r = accion === "guardar"
+    ? await fetch(API, {method: "POST", body: JSON.stringify(datos)}) // text/plain: Apps Script no acepta preflight CORS
+    : await fetch(`${API}?accion=${accion}&${accion === "buscar" ? "q" : "g"}=${encodeURIComponent(datos)}`);
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+const sinConexion = `<p class="ayuda">No pudimos conectarnos 😕 Probá de nuevo en un rato o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
+let espera, ultima = 0;
 $("#q").addEventListener("input", e => {
-  const q = e.target.value, r = buscar(q), res = $("#resultados");
-  res.innerHTML = "";
-  if (norm(q).length < 3) return;
-  if (!r.length) {
-    res.innerHTML = `<p class="ayuda">No te encontramos 😕 Probá con otra forma de tu nombre o <a href="${$("#wsp").href}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
-    return;
-  }
-  r.forEach(p => {
-    const b = document.createElement("button");
-    b.className = "resultado";
-    b.innerHTML = `<span>${p.n} ${p.a}</span><small>${p.g} ›</small>`;
-    b.onclick = () => mostrarGrupo(p.g);
-    res.append(b);
-  });
+  const q = e.target.value, res = $("#resultados");
+  clearTimeout(espera);
+  if (norm(q).replace(/\s/g, "").length < 3) { res.innerHTML = ""; return; }
+  res.innerHTML = `<p class="ayuda">Buscando…</p>`;
+  espera = setTimeout(async () => {
+    const n = ++ultima;
+    let r;
+    try { r = await api("buscar", q); } catch { if (n === ultima) res.innerHTML = sinConexion; return; }
+    if (n !== ultima) return; // llegó tarde: ya hay una búsqueda más nueva
+    if (!r.length) {
+      res.innerHTML = `<p class="ayuda">No te encontramos 😕 Probá con otra forma de tu nombre o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
+      return;
+    }
+    res.innerHTML = "";
+    r.forEach(p => {
+      const b = document.createElement("button");
+      b.className = "resultado";
+      b.innerHTML = `<span>${esc(p.n)} ${esc(p.a)}</span><small>${esc(p.g)} ›</small>`;
+      b.onclick = () => mostrarGrupo(p.g);
+      res.append(b);
+    });
+  }, 350);
 });
 
-function mostrarGrupo(g){
-  const miembros = DEMO.filter(p => p.g === g), box = $("#paso-grupo");
-  box.innerHTML = `<div class="grupo"><h3>${g}</h3><p class="ayuda">Marcá quién viene:</p>${
-    miembros.map((p, i) => `<div class="persona"><span>${p.n} ${p.a}</span><div class="opciones" role="group" aria-label="${p.n}">
-      <button class="opcion si" aria-pressed="false" data-i="${i}">Va</button>
-      <button class="opcion no" aria-pressed="false" data-i="${i}">No va</button></div></div>`).join("")
-  }<button class="btn" id="confirmar" disabled>Confirmar</button><button class="btn btn-sec" id="volver">← Volver</button></div>`;
+async function mostrarGrupo(g){
+  const box = $("#paso-grupo");
   $("#paso-buscar").hidden = true; box.hidden = false;
+  box.innerHTML = `<p class="ayuda">Cargando…</p>`;
+  let datos;
+  try { datos = await api("grupo", g); } catch { box.innerHTML = sinConexion + `<button class="btn btn-sec" id="volver">← Volver</button>`; $("#volver").onclick = volver; return; }
+  const m = datos.miembros;
+  if (!datos.abierto) {
+    box.innerHTML = `<p>La confirmación ya cerró. Cualquier cambio, <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p><button class="btn btn-sec" id="volver">← Volver</button>`;
+    $("#volver").onclick = volver; return;
+  }
+  box.innerHTML = `<div class="grupo"><h3>${esc(g)}</h3><p class="ayuda">Marcá quién viene:</p>${
+    m.map((p, i) => `<div class="persona"><span>${esc(p.n)} ${esc(p.a)}</span><div class="opciones" role="group" aria-label="${esc(p.n)}">
+      <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Va</button>
+      <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No va</button></div></div>`).join("")
+  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button><button class="btn btn-sec" id="volver">← Volver</button></div>`;
+  const listo = () => $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < m.length;
+  listo();
   $$(".opcion", box).forEach(o => o.onclick = () => {
     $$(`.opcion[data-i="${o.dataset.i}"]`, box).forEach(x => x.setAttribute("aria-pressed", x === o));
-    $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < miembros.length;
+    listo();
   });
-  $("#volver").onclick = () => { box.hidden = true; $("#paso-buscar").hidden = false; };
-  $("#confirmar").onclick = () => {
+  $("#volver").onclick = volver;
+  $("#confirmar").onclick = async () => {
+    const respuestas = m.map((p, i) => ({fila: p.fila, asiste: $(`.opcion.si[data-i="${i}"]`, box).getAttribute("aria-pressed") === "true" ? "sí" : "no"}));
+    $("#confirmar").disabled = true; $("#estado").textContent = "Guardando…";
+    let r;
+    try { r = await api("guardar", {g, respuestas}); } catch { r = {}; }
+    if (!r.ok) {
+      $("#estado").innerHTML = r.error === "cerrado" ? "La confirmación ya cerró." : `No se pudo guardar. Probá de nuevo o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.`;
+      $("#confirmar").disabled = false; return;
+    }
     box.innerHTML = `<div><p class="script" style="font-size:2.6rem;color:var(--caramelo)">¡Gracias!</p>
       <p>Recibimos tu confirmación 💗💙</p><p class="ayuda">Si cambian los planes, podés modificarla hasta el 16 de enero.</p>
       <button class="btn btn-sec" id="otra" style="margin-top:1rem">Modificar respuesta</button></div>`;
     $("#otra").onclick = () => mostrarGrupo(g);
   };
 }
+function volver(){ $("#paso-grupo").hidden = true; $("#paso-buscar").hidden = false; }
 </script>
 </body>
 </html>
