@@ -36,10 +36,8 @@ button,input{font:inherit;color:inherit}
   background:linear-gradient(160deg,var(--rosa-suave),var(--celeste-suave));transition:opacity .8s ease .9s,visibility 0s 1.7s}
 #portada.abierta{opacity:0;visibility:hidden}
 .sobre{position:relative;width:min(84vw,340px);aspect-ratio:3/2;perspective:900px}
-.sobre-cuerpo{position:absolute;inset:0;background:var(--beige-claro);border-radius:14px;box-shadow:var(--sombra);overflow:hidden}
-.sobre-cuerpo::before,.sobre-cuerpo::after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:var(--beige)}
-.sobre-cuerpo::before{left:0;clip-path:polygon(0 0,0 100%,100% 100%)}
-.sobre-cuerpo::after{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.sobre-cuerpo{position:absolute;inset:0;background:var(--beige);border-radius:14px;box-shadow:var(--sombra)}
+.bolsillo{position:absolute;inset:0;background:var(--beige-claro);clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);border-radius:14px;z-index:2}
 .carta{position:absolute;left:8%;right:8%;top:10%;height:80%;background:#fff;border-radius:10px;display:grid;place-items:center;text-align:center;font-family:Fredoka;font-size:1.1rem;
   transition:transform .9s cubic-bezier(.3,1.4,.5,1) .35s;z-index:1}
 .solapa{position:absolute;inset:0 0 auto 0;height:58%;background:var(--rosa);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .6s ease;z-index:3;border-radius:14px 14px 0 0}
@@ -156,6 +154,7 @@ footer svg{width:90px;margin-bottom:.5rem}
   <div class="sobre" aria-hidden="true">
     <div class="sobre-cuerpo"></div>
     <div class="carta">¡Te invitamos!<br>🧸</div>
+    <div class="bolsillo"></div>
     <div class="solapa"></div>
     <div class="sello"><svg viewBox="0 0 200 160"><use href="#oso"/></svg></div>
   </div>
