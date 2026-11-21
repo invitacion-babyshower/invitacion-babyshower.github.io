@@ -277,6 +277,12 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
 <script>
+// Siempre arranca desde la portada: el navegador no recuerda dónde quedaste
+history.scrollRestoration = "manual";
+if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+scrollTo(0, 0);
+// Al volver con "atrás" el navegador restaura la página tal cual quedó: recargarla muestra la portada de nuevo
+addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 const WSP = "5491126799971";
 const EVENTO = new Date("2027-01-17T14:00:00-03:00");
 // shortcut: lista de ejemplo en el navegador; en la versión real se consulta a Apps Script y nunca se descarga la lista
