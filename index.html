@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#FBF6EF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=keyboard_arrow_down&display=block" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script>
 // Si falta una ilustración opcional (ej. plantas), no se muestra
@@ -106,8 +107,9 @@ button,input{font:inherit;color:inherit}
 
 /* ---------- Ir a la siguiente parte ---------- */
 .siguiente{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2;width:46px;height:46px;margin:0 auto;border:0;border-radius:50%;
-  background:rgba(255,255,255,.8);box-shadow:var(--sombra);color:var(--caramelo);font-size:1.5rem;line-height:1;cursor:pointer;animation:invita 2s ease-in-out infinite}
+  background:rgba(255,255,255,.8);box-shadow:var(--sombra);color:var(--caramelo);display:grid;place-items:center;padding:0;cursor:pointer;animation:invita 2s ease-in-out infinite}
 @keyframes invita{50%{translate:0 6px}}
+.siguiente .material-symbols-rounded{font-size:30px}
 .siguiente:focus-visible{outline:3px solid var(--celeste-txt);outline-offset:3px}
 
 /* ---------- Botones ---------- */
@@ -181,7 +183,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 2 -->
   <section class="escena" id="e2">
     <div class="lienzo">
-      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <button class="siguiente" aria-label="Ir a la siguiente parte"><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></button>
       <p class="texto split">Estamos muy emocionados de contarles que tendremos un nuevo integrante en la familia</p>
       <img class="ilu centro osito-corazones flota" src="assets/img/osito-corazones.webp" onerror="ph(this)" alt="Osito con globos de corazón rosa y celeste">
     </div>
@@ -190,7 +192,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 3 -->
   <section class="escena" id="e3">
     <div class="lienzo">
-      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <button class="siguiente" aria-label="Ir a la siguiente parte"><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></button>
       <img class="ilu luna flota lenta" src="assets/img/luna.webp" onerror="ph(this)" alt="">
       <p class="texto split">Estamos muy felices, ¡llegó el momento de conocer mi género!</p>
       <img class="ilu bodies hamaca" src="assets/img/bodies.webp" onerror="ph(this)" alt="Bodies de bebé rosa y celeste">
@@ -200,7 +202,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 4 -->
   <section class="escena" id="e4">
     <div class="lienzo">
-      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <button class="siguiente" aria-label="Ir a la siguiente parte"><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></button>
       <div class="bloque">
         <h2 class="texto split">¡Queremos vivirlo con vos!</h2>
         <p class="texto chico split">Mis papis</p>
@@ -214,7 +216,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 5 -->
   <section class="escena" id="e5">
     <div class="lienzo">
-      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <button class="siguiente" aria-label="Ir a la siguiente parte"><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></button>
       <img class="ilu avion flota" src="assets/img/avion.webp" onerror="ph(this)" alt="">
       <div class="bloque">
         <h2 class="script pregunta split">¿Será <span class="rosa">niña</span> o <span class="celeste">niño</span>?</h2>
@@ -233,7 +235,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <!-- ESCENA 6 -->
   <section class="escena" id="e6">
     <div class="lienzo">
-      <button class="siguiente" aria-label="Ir a la siguiente parte">&#8964;</button>
+      <button class="siguiente" aria-label="Ir a la siguiente parte"><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></button>
       <img class="ilu osito-girl flota" src="assets/img/osito-girl.webp" onerror="ph(this)" alt="Osito con globos rosas">
       <div class="t-girl"><p class="team rosa split">Team Girl</p><p class="regalo split">Pañales</p></div>
       <img class="ilu osito-boy flota" src="assets/img/osito-boy.webp" onerror="ph(this)" alt="Osito con globos celestes">
