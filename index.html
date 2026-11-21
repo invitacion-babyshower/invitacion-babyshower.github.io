@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Baby Shower · José & Johanna</title>
+<meta name="description" content="Te invitamos al Baby Shower de José y Johanna — domingo 17 de enero de 2027, 14 a 17 hs.">
+<meta name="theme-color" content="#FDEFF4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa:#F7C6D6; --rosa-suave:#FDEFF4; --rosa-fuerte:#E89AB4;
+  --celeste:#BFE0F3; --celeste-suave:#EEF7FC; --celeste-fuerte:#86C1E3;
+  --beige:#E9CFAE; --beige-claro:#F7EBDC; --marron:#B98B66; --cacao:#6E4E3D;
+  --crema:#FFFAF4; --ok:#9ED4B0;
+  --marron-txt:#8A6044; --rosa-txt:#A8436B; --celeste-txt:#3F86B3;
+  --radio:22px; --sombra:0 10px 30px rgba(110,78,61,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Quicksand,system-ui,sans-serif;color:var(--cacao);background:var(--crema);line-height:1.5;overflow-x:hidden}
+h1,h2,h3{font-family:Fredoka,Quicksand,sans-serif;font-weight:500;line-height:1.15}
+h2{font-size:clamp(1.8rem,7vw,2.6rem)}
+h3{font-size:1.3rem}
+button,input{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.5rem;border:0;border-radius:999px;background:var(--cacao);color:#fff;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--sombra)}
+.btn:focus-visible,input:focus-visible,.opcion:focus-visible{outline:3px solid var(--celeste-fuerte);outline-offset:3px}
+.btn-wsp{background:#117A4B}
+.btn-sec{background:#fff;color:var(--cacao);border:2px solid var(--beige)}
+
+/* ---------- Portada / sobre ---------- */
+#portada{position:fixed;inset:0;z-index:50;display:grid;place-items:center;align-content:center;gap:2rem;padding:1.5rem;
+  background:linear-gradient(160deg,var(--rosa-suave),var(--celeste-suave));transition:opacity .8s ease .9s,visibility 0s 1.7s}
+#portada.abierta{opacity:0;visibility:hidden}
+.sobre{position:relative;width:min(84vw,340px);aspect-ratio:3/2;perspective:900px}
+.sobre-cuerpo{position:absolute;inset:0;background:var(--beige-claro);border-radius:14px;box-shadow:var(--sombra);overflow:hidden}
+.sobre-cuerpo::before,.sobre-cuerpo::after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:var(--beige)}
+.sobre-cuerpo::before{left:0;clip-path:polygon(0 0,0 100%,100% 100%)}
+.sobre-cuerpo::after{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.carta{position:absolute;left:8%;right:8%;top:10%;height:80%;background:#fff;border-radius:10px;display:grid;place-items:center;text-align:center;font-family:Fredoka;font-size:1.1rem;
+  transition:transform .9s cubic-bezier(.3,1.4,.5,1) .35s;z-index:1}
+.solapa{position:absolute;inset:0 0 auto 0;height:58%;background:var(--rosa);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .6s ease;z-index:3;border-radius:14px 14px 0 0}
+.sello{position:absolute;left:50%;top:58%;translate:-50% -50%;width:64px;height:64px;border-radius:50%;background:var(--celeste);display:grid;place-items:center;z-index:4;box-shadow:0 4px 12px rgba(0,0,0,.1);transition:opacity .3s}
+.sello svg{width:44px}
+.abierta .solapa{transform:rotateX(180deg);z-index:0}
+.abierta .sello{opacity:0}
+.abierta .carta{transform:translateY(-55%)}
+.portada-txt{text-align:center}
+.portada-txt p{font-size:1.05rem;margin-bottom:1rem}
+
+/* ---------- Música ---------- */
+#musica{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:40;width:48px;height:48px;border-radius:50%;border:0;background:#fff;box-shadow:var(--sombra);cursor:pointer;font-size:1.3rem}
+#musica[aria-pressed="false"]{opacity:.6}
+
+/* ---------- Secciones ---------- */
+section{position:relative;padding:4.5rem 1.25rem;display:grid;justify-items:center;text-align:center;gap:1.25rem}
+.cont{width:100%;max-width:560px;display:grid;gap:1.25rem;justify-items:center}
+.etiqueta{font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--marron-txt);font-weight:600}
+.tarjeta{width:100%;background:#fff;border-radius:var(--radio);padding:1.75rem 1.25rem;box-shadow:var(--sombra)}
+
+/* Hero */
+#hero{min-height:100svh;align-content:center;background:linear-gradient(180deg,var(--rosa-suave),var(--crema) 55%,var(--celeste-suave));overflow:hidden}
+#hero h1{font-size:clamp(2.6rem,11vw,4.5rem);color:var(--cacao)}
+#hero h1 span{display:block;font-size:clamp(1.15rem,4.5vw,1.7rem);color:var(--marron-txt);font-weight:400;letter-spacing:.05em}
+.nombres{font-family:Fredoka;font-size:clamp(1.4rem,6vw,2rem)}
+.nombres b{color:var(--rosa-txt);font-weight:500}
+.oso-hero{width:min(62vw,250px);animation:flotar 5s ease-in-out infinite}
+.globito{position:absolute;bottom:-80px;width:38px;opacity:.75;animation:subir linear infinite}
+@keyframes flotar{50%{transform:translateY(-12px) rotate(-1.5deg)}}
+@keyframes subir{to{transform:translate(var(--dx,20px),-120vh) rotate(8deg)}}
+.flecha{font-size:1.5rem;animation:flotar 2s ease-in-out infinite;opacity:.6}
+
+/* Cuenta regresiva */
+.cuenta{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;width:100%}
+.cuenta div{background:#fff;border-radius:16px;padding:.9rem .25rem;box-shadow:var(--sombra)}
+.cuenta b{display:block;font-family:Fredoka;font-size:clamp(1.6rem,7vw,2.3rem);font-weight:500}
+.cuenta small{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--marron-txt)}
+.cuenta div:nth-child(odd) b{color:var(--rosa-txt)} .cuenta div:nth-child(even) b{color:var(--celeste-txt)}
+
+.datos{display:grid;gap:1rem;width:100%}
+.dato{display:flex;gap:1rem;align-items:center;text-align:left}
+.dato .ico{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem}
+.dato:nth-child(1) .ico{background:var(--rosa-suave)} .dato:nth-child(2) .ico{background:var(--celeste-suave)}
+.dato h3{font-size:1.15rem}
+
+/* RSVP */
+#rsvp{background:linear-gradient(180deg,var(--crema),var(--rosa-suave))}
+.buscador{width:100%;display:grid;gap:.5rem;text-align:left}
+.buscador input{width:100%;min-height:54px;padding:.8rem 1.1rem;border-radius:16px;border:2px solid var(--beige);background:#fff;font-size:1.05rem}
+.ayuda{font-size:.85rem;color:var(--marron-txt)}
+.resultados{width:100%;display:grid;gap:.5rem}
+.resultado{display:flex;justify-content:space-between;align-items:center;gap:.5rem;width:100%;min-height:54px;padding:.75rem 1rem;border-radius:14px;border:2px solid transparent;background:#fff;cursor:pointer;text-align:left;box-shadow:0 3px 10px rgba(110,78,61,.08);animation:aparecer .35s ease both}
+.resultado:hover{border-color:var(--celeste)}
+.resultado small{color:var(--marron-txt)}
+.grupo{width:100%;display:grid;gap:.75rem;text-align:left;animation:aparecer .4s ease both}
+.persona{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px dashed var(--beige)}
+.persona:last-of-type{border-bottom:0}
+.opciones{display:flex;gap:.4rem;flex:none}
+.opcion{min-height:44px;min-width:76px;padding:.4rem .8rem;border-radius:999px;border:2px solid var(--beige);background:#fff;cursor:pointer;font-weight:600;transition:background .2s,border-color .2s}
+.opcion[aria-pressed="true"].si{background:var(--ok);border-color:var(--ok)}
+.opcion[aria-pressed="true"].no{background:var(--rosa);border-color:var(--rosa)}
+.gracias{animation:aparecer .5s ease both}
+.gracias .oso-mini{width:110px;margin:0 auto .5rem;animation:flotar 3s ease-in-out infinite}
+@keyframes aparecer{from{opacity:0;transform:translateY(10px)}}
+
+#consultas{background:var(--celeste-suave)}
+footer{padding:3rem 1.25rem 4rem;text-align:center;background:var(--celeste-suave);font-family:Fredoka;font-size:1.2rem}
+footer svg{width:90px;margin-bottom:.5rem}
+
+/* Revelado al scrollear */
+.revelar{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+.revelar.visible{opacity:1;transform:none}
+
+.boceto{position:fixed;left:50%;bottom:12px;translate:-50% 0;z-index:45;background:var(--cacao);color:#fff;font-size:.75rem;padding:.35rem .8rem;border-radius:999px;opacity:.85}
+
+@media (min-width:760px){
+  section{padding:6rem 2rem}
+  .datos{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .revelar{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Oso reutilizable -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="oso" viewBox="0 0 200 160">
+      <circle cx="58" cy="38" r="22" fill="#E9CFAE"/><circle cx="58" cy="38" r="11" fill="#F7C6D6"/>
+      <circle cx="142" cy="38" r="22" fill="#E9CFAE"/><circle cx="142" cy="38" r="11" fill="#BFE0F3"/>
+      <ellipse cx="100" cy="85" rx="62" ry="56" fill="#E9CFAE"/>
+      <ellipse cx="100" cy="104" rx="26" ry="19" fill="#F7EBDC"/>
+      <ellipse cx="100" cy="96" rx="9" ry="6" fill="#6E4E3D"/>
+      <path d="M92 108q8 7 16 0" stroke="#6E4E3D" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="78" cy="78" r="6" fill="#6E4E3D"/><circle cx="122" cy="78" r="6" fill="#6E4E3D"/>
+      <circle cx="80" cy="76" r="2" fill="#fff"/><circle cx="124" cy="76" r="2" fill="#fff"/>
+      <ellipse cx="66" cy="98" rx="9" ry="6" fill="#F7C6D6" opacity=".8"/><ellipse cx="134" cy="98" rx="9" ry="6" fill="#F7C6D6" opacity=".8"/>
+    </symbol>
+    <symbol id="globo" viewBox="0 0 40 70">
+      <path d="M20 44 Q16 56 22 70" stroke="#B98B66" stroke-width="1.2" fill="none"/>
+      <ellipse cx="20" cy="22" rx="17" ry="21"/>
+      <path d="M17 43h6l-3 4z"/>
+      <ellipse cx="13" cy="14" rx="4" ry="6" fill="#fff" opacity=".45"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- PORTADA -->
+<div id="portada">
+  <div class="sobre" aria-hidden="true">
+    <div class="sobre-cuerpo"></div>
+    <div class="carta">¡Te invitamos!<br>🧸</div>
+    <div class="solapa"></div>
+    <div class="sello"><svg viewBox="0 0 200 160"><use href="#oso"/></svg></div>
+  </div>
+  <div class="portada-txt">
+    <p>Tenés una invitación especial 💌</p>
+    <button class="btn" id="abrir">Abrir invitación</button>
+  </div>
+</div>
+
+<button id="musica" aria-pressed="false" aria-label="Música de fondo">🔇</button>
+
+<main>
+  <!-- HERO -->
+  <section id="hero">
+    <svg class="globito" style="left:8%;fill:#F7C6D6;animation-duration:14s" viewBox="0 0 40 70"><use href="#globo"/></svg>
+    <svg class="globito" style="left:80%;fill:#BFE0F3;animation-duration:17s;animation-delay:3s;--dx:-30px" viewBox="0 0 40 70"><use href="#globo"/></svg>
+    <svg class="globito" style="left:45%;fill:#E9CFAE;animation-duration:20s;animation-delay:7s" viewBox="0 0 40 70"><use href="#globo"/></svg>
+    <svg class="globito" style="left:25%;fill:#BFE0F3;animation-duration:16s;animation-delay:10s" viewBox="0 0 40 70"><use href="#globo"/></svg>
+    <svg class="globito" style="left:65%;fill:#F7C6D6;animation-duration:19s;animation-delay:5s;--dx:-15px" viewBox="0 0 40 70"><use href="#globo"/></svg>
+
+    <div class="cont">
+      <svg class="oso-hero" viewBox="0 0 200 250" role="img" aria-label="Osito con globos rosa y celeste">
+        <path d="M55 82 L140 168 M100 66 L140 168 M150 74 L140 168" stroke="#B98B66" stroke-width="1.5"/>
+        <g fill="#F7C6D6"><ellipse cx="55" cy="46" rx="28" ry="34"/><path d="M51 79h8l-4 5z"/></g>
+        <g fill="#E9CFAE"><ellipse cx="100" cy="32" rx="24" ry="29"/><path d="M96 60h8l-4 5z"/></g>
+        <g fill="#BFE0F3"><ellipse cx="150" cy="40" rx="28" ry="34"/><path d="M146 73h8l-4 5z"/></g>
+        <ellipse cx="45" cy="34" rx="6" ry="10" fill="#fff" opacity=".5"/><ellipse cx="140" cy="28" rx="6" ry="10" fill="#fff" opacity=".5"/>
+        <ellipse cx="100" cy="212" rx="46" ry="36" fill="#E9CFAE"/>
+        <ellipse cx="100" cy="220" rx="27" ry="22" fill="#F7EBDC"/>
+        <ellipse cx="140" cy="172" rx="13" ry="18" fill="#E9CFAE" transform="rotate(-30 140 172)"/>
+        <ellipse cx="62" cy="200" rx="12" ry="17" fill="#E9CFAE" transform="rotate(25 62 200)"/>
+        <use href="#oso" x="35" y="100" width="130" height="104"/>
+      </svg>
+      <h1><span>¡Se viene un bebé!</span>Baby Shower</h1>
+      <p class="nombres">de <b>José</b> &amp; <b>Johanna</b></p>
+      <p>Niña o niño, lo vamos a esperar con todo el amor 💗💙</p>
+      <a href="#cuando" class="flecha" aria-label="Ver más">⌄</a>
+    </div>
+  </section>
+
+  <!-- CUÁNDO Y DÓNDE -->
+  <section id="cuando">
+    <div class="cont revelar">
+      <p class="etiqueta">Falta poquito</p>
+      <h2>Domingo 17 de enero</h2>
+      <div class="cuenta" aria-live="polite">
+        <div><b id="d">--</b><small>días</small></div>
+        <div><b id="h">--</b><small>horas</small></div>
+        <div><b id="m">--</b><small>min</small></div>
+        <div><b id="s">--</b><small>seg</small></div>
+      </div>
+    </div>
+    <div class="cont revelar">
+      <div class="datos">
+        <div class="tarjeta dato"><div class="ico">🗓️</div><div><h3>17 de enero de 2027</h3><p>de 14 a 17 hs</p></div></div>
+        <div class="tarjeta dato"><div class="ico">📍</div><div><h3>Gemma Eventos</h3><p>Av. Caseros 3671</p></div></div>
+      </div>
+      <a class="btn btn-sec" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Gemma+Eventos+Av.+Caseros+3671">Cómo llegar 🗺️</a>
+    </div>
+  </section>
+
+  <!-- RSVP -->
+  <section id="rsvp">
+    <div class="cont revelar">
+      <p class="etiqueta">Confirmá tu asistencia</p>
+      <h2>¿Venís a conocer a la familia?</h2>
+      <div class="tarjeta" style="display:grid;gap:1rem">
+        <div id="paso-buscar" style="display:grid;gap:1rem">
+          <label class="buscador">
+            <span>Buscá tu nombre y apellido</span>
+            <input id="q" type="search" autocomplete="off" placeholder="Ej: María Pérez" aria-describedby="ayuda">
+            <span class="ayuda" id="ayuda">Escribí al menos 3 letras.</span>
+          </label>
+          <div class="resultados" id="resultados" aria-live="polite"></div>
+        </div>
+        <div id="paso-grupo" hidden></div>
+      </div>
+      <p class="ayuda">Podés cambiar tu respuesta hasta el sábado 16 de enero.</p>
+    </div>
+  </section>
+
+  <!-- CONSULTAS -->
+  <section id="consultas">
+    <div class="cont revelar">
+      <p class="etiqueta">¿Tenés dudas?</p>
+      <h2>Escribinos</h2>
+      <p>Te respondemos por WhatsApp.</p>
+      <a class="btn btn-wsp" id="wsp" target="_blank" rel="noopener">💬 Consultar por WhatsApp</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <svg viewBox="0 0 200 160" aria-hidden="true"><use href="#oso"/></svg>
+  <p>¡Te esperamos! 🎈</p>
+</footer>
+
+<div class="boceto">BOCETO · datos de ejemplo</div>
+
+<script>
+// --- Config (boceto) ---
+const WSP = "5491126799971";
+const EVENTO = new Date("2027-01-17T14:00:00-03:00");
+// shortcut: datos de ejemplo en el navegador; en la versión real se consultan a Apps Script y nunca se descarga la lista
+const DEMO = [
+  {g:"Familia Alfaro", n:"José", a:"Alfaro"}, {g:"Familia Alfaro", n:"Johanna", a:"Rivas"},
+  {g:"Familia Pérez", n:"María", a:"Pérez"}, {g:"Familia Pérez", n:"Juan", a:"Pérez"}, {g:"Familia Pérez", n:"Sofía", a:"Pérez"},
+  {g:"Familia Gómez", n:"Lucía", a:"Gómez"}
+];
+
+const $ = s => document.querySelector(s);
+const norm = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+const wspMsg = encodeURIComponent("¡Hola! Te escribo por el Baby Shower de José y Johanna 🧸🎈. Tengo una consulta: ");
+$("#wsp").href = `https://wa.me/${WSP}?text=${wspMsg}`;
+
+// Portada
+$("#abrir").addEventListener("click", () => {
+  $("#portada").classList.add("abierta");
+  $("#musica").setAttribute("aria-pressed", "true"); $("#musica").textContent = "🎵";
+});
+$("#musica").addEventListener("click", e => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.textContent = on ? "🎵" : "🔇";
+});
+
+// Cuenta regresiva
+function tick(){
+  let r = Math.max(0, EVENTO - Date.now()) / 1000;
+  const v = [Math.floor(r/86400), Math.floor(r%86400/3600), Math.floor(r%3600/60), Math.floor(r%60)];
+  ["d","h","m","s"].forEach((id,i) => $("#"+id).textContent = String(v[i]).padStart(2,"0"));
+}
+tick(); setInterval(tick, 1000);
+
+// Revelar al scrollear
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add("visible")), {threshold:.15});
+document.querySelectorAll(".revelar").forEach(el => io.observe(el));
+
+// Buscador
+function buscar(q){
+  const toks = norm(q).split(/\s+/).filter(Boolean);
+  if (norm(q).replace(/\s/g,"").length < 3) return [];
+  return DEMO.filter(p => toks.every(t => norm(p.n + " " + p.a).includes(t)));
+}
+console.assert(buscar("jose").length === 1 && buscar("PEREZ").length === 3 && buscar("ma").length === 0 && buscar("jose alf").length === 1, "buscador");
+
+const res = $("#resultados");
+$("#q").addEventListener("input", e => {
+  const q = e.target.value, r = buscar(q);
+  res.innerHTML = "";
+  if (norm(q).length < 3) return;
+  if (!r.length) {
+    res.innerHTML = `<p class="ayuda">No te encontramos 😕 Probá con otra forma de tu nombre o <a href="${$("#wsp").href}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
+    return;
+  }
+  r.forEach(p => {
+    const b = document.createElement("button");
+    b.className = "resultado";
+    b.innerHTML = `<span>${p.n} ${p.a}</span><small>${p.g} ›</small>`;
+    b.onclick = () => mostrarGrupo(p.g);
+    res.append(b);
+  });
+});
+
+function mostrarGrupo(g){
+  const miembros = DEMO.filter(p => p.g === g);
+  const box = $("#paso-grupo");
+  box.innerHTML = `<div class="grupo"><h3>${g}</h3><p class="ayuda">Marcá quién viene:</p>${
+    miembros.map((p,i) => `<div class="persona"><span>${p.n} ${p.a}</span><div class="opciones" role="group" aria-label="${p.n}">
+      <button class="opcion si" aria-pressed="false" data-i="${i}" data-v="si">Va</button>
+      <button class="opcion no" aria-pressed="false" data-i="${i}" data-v="no">No va</button></div></div>`).join("")
+  }<button class="btn" id="confirmar" disabled>Confirmar</button><button class="btn btn-sec" id="volver">← Volver</button></div>`;
+  $("#paso-buscar").hidden = true; box.hidden = false;
+  box.querySelectorAll(".opcion").forEach(o => o.onclick = () => {
+    box.querySelectorAll(`.opcion[data-i="${o.dataset.i}"]`).forEach(x => x.setAttribute("aria-pressed", x === o));
+    $("#confirmar").disabled = box.querySelectorAll('.opcion[aria-pressed="true"]').length < miembros.length;
+  });
+  $("#volver").onclick = () => { box.hidden = true; $("#paso-buscar").hidden = false; };
+  $("#confirmar").onclick = () => {
+    box.innerHTML = `<div class="gracias"><svg class="oso-mini" viewBox="0 0 200 160"><use href="#oso"/></svg>
+      <h3>¡Gracias por confirmar! 💗💙</h3><p class="ayuda">Si cambian los planes, podés modificar tu respuesta hasta el 16 de enero.</p>
+      <button class="btn btn-sec" id="otra" style="margin-top:1rem">Modificar respuesta</button></div>`;
+    $("#otra").onclick = () => mostrarGrupo(g);
+  };
+}
+</script>
+</body>
+</html>
