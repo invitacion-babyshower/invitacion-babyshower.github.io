@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//invitacion-babyshower//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:babyshower-20270117@invitacion-babyshower.github.io
+DTSTAMP:20261122T000000Z
+DTSTART:20270117T170000Z
+DTEND:20270117T200000Z
+SUMMARY:Baby Shower y Revelación de José y Johanna 🧸
+LOCATION:Gemma Eventos\, Av. Caseros 3671
+DESCRIPTION:¿Será niña o niño? ¡Te esperamos!\nTeam Girl: pañales\nTeam 
+ Boy: toallitas húmedas\nhttps://invitacion-babyshower.github.io
+URL:https://invitacion-babyshower.github.io
+END:VEVENT
+END:VCALENDAR
