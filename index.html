@@ -281,7 +281,7 @@ if (location.hash) history.replaceState(null, "", location.pathname + location.s
 scrollTo(0, 0);
 // Al volver con "atrás" el navegador restaura la página tal cual quedó: recargarla muestra la portada de nuevo
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
-const WSP = "5491126799971";
+const WSP = "5491165865475"; // Johanna: recibe las consultas
 const EVENTO = new Date("2027-01-17T14:00:00-03:00");
 gsap.set(".n2", {scaleX: -1}); // GSAP toma el control del transform por el parallax
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -408,7 +408,9 @@ $$(".siguiente").forEach(b => b.onclick = () =>
 const API = "https://script.google.com/macros/s/AKfycbyik7RRae_MDINvaMWRDjBbUh6p2ZVdEwUQLHStW3SgtvfNhOK0JuXBqGKUOaSZIwjAmA/exec"; // aplicación web de Apps Script
 const CODIGO = new URLSearchParams(location.search).get("f") || "";
 const esc = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const escribinos = `<a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>`;
+// Abre el chat con un mensaje ya escrito (api.whatsapp.com y no wa.me: wa.me rompe los emojis)
+const WSP_LINK = `https://api.whatsapp.com/send?phone=${WSP}&text=${encodeURIComponent("¡Hola! Te escribo por el Baby Shower de José y Johanna 🧸. Tengo una consulta: ")}`;
+const escribinos = `<a href="${WSP_LINK}" target="_blank" rel="noopener">escribinos por WhatsApp</a>`;
 
 async function api(datos, intento = 1){
   try {
@@ -427,7 +429,7 @@ async function api(datos, intento = 1){
 async function mostrarFamilia(){
   const box = $("#familia");
   if (!CODIGO) {
-    box.innerHTML = `<p>Usá el <b>link personal</b> que te mandamos. ¿No lo tenés? <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">Escribinos</a>.</p>`;
+    box.innerHTML = `<p>Usá el <b>link personal</b> que te mandamos. ¿No lo tenés? <a href="${WSP_LINK}" target="_blank" rel="noopener">Escribinos</a>.</p>`;
     return;
   }
   box.innerHTML = `<p class="ayuda">Cargando…</p>`;
