@@ -123,6 +123,9 @@ button,input{font:inherit;color:inherit}
 .siguiente{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2;width:46px;height:46px;margin:0 auto;border:0;border-radius:50%;
   background:rgba(255,255,255,.8);box-shadow:var(--sombra);color:var(--caramelo);display:grid;place-items:center;padding:0;cursor:pointer;animation:invita 2s ease-in-out infinite}
 @keyframes invita{50%{translate:0 6px}}
+/* Halo suave que se expande y se desvanece, para invitar a tocar */
+.siguiente::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--caramelo);opacity:0;pointer-events:none;animation:halo 2.4s ease-out infinite}
+@keyframes halo{0%{transform:scale(1);opacity:.45}70%,100%{transform:scale(1.7);opacity:0}}
 .siguiente .material-symbols-rounded{font-size:30px}
 .siguiente:focus-visible{outline:3px solid var(--celeste-txt);outline-offset:3px}
 
@@ -387,6 +390,18 @@ function escenas(){
   // Parallax suave de las nubes al scrollear
   gsap.to(".n1", {yPercent: -40, ease: "none", scrollTrigger: {start: 0, end: "max", scrub: true}});
   gsap.to(".n2", {yPercent: -25, ease: "none", scrollTrigger: {start: 0, end: "max", scrub: true}});
+
+  // Al soltar el dedo (o la rueda) entre escenas, termina de acomodar la pantalla en la escena siguiente/anterior
+  // según hacia dónde iba. Se hace con JS al terminar el scroll: el scroll-snap de CSS trababa en iPhone.
+  // Desde la confirmación para abajo el scroll queda libre (ahí se lee y se tocan botones).
+  ScrollTrigger.create({start: 0, end: "max", snap: {
+    snapTo: (v, self) => {
+      const max = ScrollTrigger.maxScroll(window);
+      const puntos = [...$$(".escena"), $("#rsvp")].map(s => Math.min(1, s.offsetTop / max));
+      return v >= puntos.at(-1) ? v : ScrollTrigger.snapDirectional(puntos)(v, self.direction);
+    },
+    duration: {min: .2, max: .45}, delay: .05, ease: "power2.out"
+  }});
 }
 
 // Portada: se escribe sola al cargar
