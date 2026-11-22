@@ -150,9 +150,9 @@ button,input{font:inherit;color:inherit}
 .aviso{font-size:.92rem;font-style:italic;color:var(--cacao);padding:.65rem .9rem;border-radius:14px;background:rgba(235,217,195,.45)}
 .grupo{display:grid;gap:1rem;text-align:left}
 .grupo h3{font-weight:500;font-size:1.3rem}
-.persona{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.8rem 0;border-bottom:1px dashed var(--beige)}
+.persona{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.8rem;padding:.8rem 0;border-bottom:1px dashed var(--beige)}
 .opciones{display:flex;gap:.4rem;flex:none}
-.opcion{min-height:44px;min-width:72px;padding:.35rem .8rem;border-radius:999px;border:2px solid var(--beige);background:#fff;cursor:pointer;transition:background .2s,border-color .2s}
+.opcion{min-height:44px;min-width:72px;padding:.5rem .9rem;white-space:nowrap;border-radius:999px;border:2px solid var(--beige);background:#fff;cursor:pointer;transition:background .2s,border-color .2s}
 .opcion[aria-pressed="true"].si{background:var(--ok);border-color:var(--ok)}
 .opcion[aria-pressed="true"].no{background:var(--rosa);border-color:var(--rosa)}
 footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--caramelo)}
