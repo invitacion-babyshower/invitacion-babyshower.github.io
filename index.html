@@ -464,8 +464,8 @@ async function mostrarFamilia(){
     m.map((p, i) => `<div class="persona"><span>${esc(p.n)} ${esc(p.a)}</span><div class="opciones" role="group" aria-label="${esc(p.n)}">
       <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Sí asiste</button>
       <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No asiste</button></div></div>`).join("")
-  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button><br>
-    <a class="btn btn-sec" href="${AGENDA}" target="_blank" rel="noopener" style="margin-top:.8rem">📅 Agendar en mi calendario</a></div>`;
+  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button>
+    <a class="btn btn-sec" href="${AGENDA}" target="_blank" rel="noopener" style="margin-top:-.5rem">📅 Agendar en mi calendario</a></div>`;
   const listo = () => $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < m.length;
   listo();
   $$(".opcion", box).forEach(o => o.onclick = () => {
