@@ -164,9 +164,11 @@ function panel(clave) {
     li{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 14px rgba(107,78,57,.1)}
     li div{display:grid;gap:2px} small{color:#86624A} li.ok{opacity:.6} li.ok small{color:#117A4B}
     a{flex:none;background:#117A4B;color:#fff;text-decoration:none;font-weight:600;padding:12px 16px;border-radius:999px}
+    a.ver{display:block;text-align:center;margin:0 0 16px;background:#fff;color:#6B4E39;border:1.5px solid #E8D9C5}
   </style>
   <h1>🧸 Invitaciones para mandar</h1>
   <p>Tocá <b>Enviar</b>, elegí el contacto en WhatsApp y mandalo. Queda marcada como enviada para todos.</p>
+  <a class="ver" href="${SITIO}asistencia#${esc(clave)}" target="_top">👥 Ver quién viene</a>
   <ul>${items}</ul>
   <script>
     function marcar(a, codigo){
