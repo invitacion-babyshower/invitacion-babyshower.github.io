@@ -141,14 +141,8 @@ button,input{font:inherit;color:inherit}
 .seccion{position:relative;min-height:100svh;display:grid;place-items:center;padding:4rem 1.25rem}
 .panel{width:min(100%,480px);background:rgba(255,255,255,.88);border-radius:26px;padding:2rem 1.25rem;box-shadow:var(--sombra);display:grid;gap:1rem;text-align:center}
 .panel h2{font-size:clamp(1.7rem,7vw,2.2rem);font-weight:500;color:var(--caramelo)}
-.buscador{display:grid;gap:.4rem;text-align:left}
-.buscador input{width:100%;min-height:52px;padding:.75rem 1rem;border-radius:16px;border:2px solid var(--beige);background:#fff;font-size:1.05rem}
 .ayuda{font-size:.9rem;color:var(--caramelo)}
 .aviso{font-size:.92rem;font-style:italic;color:var(--cacao);padding:.65rem .9rem;border-radius:14px;background:rgba(235,217,195,.45)}
-.resultados{display:grid;gap:.5rem}
-.resultado{display:flex;justify-content:space-between;align-items:center;gap:.5rem;min-height:52px;padding:.7rem 1rem;border-radius:14px;border:2px solid transparent;background:#fff;cursor:pointer;text-align:left;box-shadow:0 3px 10px rgba(107,78,57,.08)}
-.resultado:hover{border-color:var(--celeste)}
-.resultado small{color:var(--caramelo)}
 .grupo{display:grid;gap:.6rem;text-align:left}
 .grupo h3{font-weight:500;font-size:1.3rem}
 .persona{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.6rem 0;border-bottom:1px dashed var(--beige)}
@@ -265,15 +259,9 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
   <section class="seccion" id="rsvp">
     <div class="panel">
       <h2>Confirmá tu asistencia</h2>
-      <p>Buscate en la lista y confirmá también por tu familia.</p>
+      <p>Confirmá por vos y por tu familia.</p>
       <p class="aviso">Invitación personal e intransferible. No se permiten acompañantes adicionales, incluidos niños.</p>
-      <div id="paso-buscar" class="buscador">
-        <label for="q">Tu nombre y apellido</label>
-        <input id="q" type="search" autocomplete="off" placeholder="Ej: María Pérez" aria-describedby="ayuda">
-        <span class="ayuda" id="ayuda">Escribí al menos 3 letras.</span>
-        <div class="resultados" id="resultados" aria-live="polite"></div>
-      </div>
-      <div id="paso-grupo" hidden></div>
+      <div id="familia" aria-live="polite"></div>
       <p class="ayuda">Podés cambiar tu respuesta hasta el sábado 16 de enero.</p>
     </div>
   </section>
@@ -418,91 +406,69 @@ const wspMsg = encodeURIComponent("¡Hola! Te escribo por el Baby Shower y Revel
 $("#wsp").href = `https://wa.me/${WSP}?text=${wspMsg}`;
 
 // ---------- Confirmación ----------
-// La búsqueda y el guardado los hace Apps Script sobre la planilla (backend/Codigo.gs): el navegador nunca recibe la lista completa.
+// Cada familia confirma desde su link personal (?f=código). Apps Script valida el código (backend/Codigo.gs):
+// no hay buscador, así que nadie ve la lista ni puede tocar a otra familia.
 const API = "https://script.google.com/macros/s/AKfycbyik7RRae_MDINvaMWRDjBbUh6p2ZVdEwUQLHStW3SgtvfNhOK0JuXBqGKUOaSZIwjAmA/exec"; // aplicación web de Apps Script
-const norm = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+const CODIGO = new URLSearchParams(location.search).get("f") || "";
 const esc = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const escribinos = `<a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>`;
 
-async function api(accion, datos, intento = 1){
+async function api(datos, intento = 1){
   try {
-    const r = accion === "guardar"
+    const r = datos
       ? await fetch(API, {method: "POST", body: JSON.stringify(datos)}) // text/plain: Apps Script no acepta preflight CORS
-      : await fetch(`${API}?accion=${accion}&${accion === "buscar" ? "q" : "g"}=${encodeURIComponent(datos)}`);
+      : await fetch(`${API}?f=${encodeURIComponent(CODIGO)}`);
     if (!r.ok) throw new Error(r.status);
     return await r.json();
   } catch (e) {
-    // Apps Script a veces falla en la primera llamada después de un rato sin uso: las lecturas se reintentan una vez
-    if (accion !== "guardar" && intento < 2) return api(accion, datos, intento + 1);
+    // Apps Script a veces falla en la primera llamada después de un rato sin uso: la lectura se reintenta una vez
+    if (!datos && intento < 2) return api(datos, intento + 1);
     throw e;
   }
 }
 
-const sinConexion = `<p class="ayuda">No pudimos conectarnos 😕 Probá de nuevo en un rato o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
-let espera, ultima = 0;
-$("#q").addEventListener("input", e => {
-  const q = e.target.value, res = $("#resultados");
-  clearTimeout(espera);
-  if (norm(q).replace(/\s/g, "").length < 3) { res.innerHTML = ""; return; }
-  res.innerHTML = `<p class="ayuda">Buscando…</p>`;
-  espera = setTimeout(async () => {
-    const n = ++ultima;
-    let r;
-    try { r = await api("buscar", q); } catch { if (n === ultima) res.innerHTML = sinConexion; return; }
-    if (n !== ultima) return; // llegó tarde: ya hay una búsqueda más nueva
-    if (!r.length) {
-      res.innerHTML = `<p class="ayuda">No te encontramos 😕 Probá con otra forma de tu nombre o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
-      return;
-    }
-    res.innerHTML = "";
-    r.forEach(p => {
-      const b = document.createElement("button");
-      b.className = "resultado";
-      b.innerHTML = `<span>${esc(p.n)} ${esc(p.a)}</span><small>${esc(p.g)} ›</small>`;
-      b.onclick = () => mostrarGrupo(p.g);
-      res.append(b);
-    });
-  }, 350);
-});
-
-async function mostrarGrupo(g){
-  const box = $("#paso-grupo");
-  $("#paso-buscar").hidden = true; box.hidden = false;
+async function mostrarFamilia(){
+  const box = $("#familia");
+  if (!CODIGO) {
+    box.innerHTML = `<p>Para confirmar, abrí el <b>link personal</b> que te enviamos por WhatsApp. Si no lo tenés, ${escribinos}.</p>`;
+    return;
+  }
   box.innerHTML = `<p class="ayuda">Cargando…</p>`;
   let datos;
-  try { datos = await api("grupo", g); } catch { box.innerHTML = sinConexion + `<button class="btn btn-sec" id="volver">← Volver</button>`; $("#volver").onclick = volver; return; }
-  const m = datos.miembros;
-  if (!datos.abierto) {
-    box.innerHTML = `<p>La confirmación ya cerró. Cualquier cambio, <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p><button class="btn btn-sec" id="volver">← Volver</button>`;
-    $("#volver").onclick = volver; return;
+  try { datos = await api(); } catch {
+    box.innerHTML = `<p class="ayuda">No pudimos conectarnos 😕 Probá de nuevo en un rato o ${escribinos}.</p><button class="btn btn-sec" id="reintentar">Reintentar</button>`;
+    $("#reintentar").onclick = mostrarFamilia; return;
   }
-  box.innerHTML = `<div class="grupo"><h3>${esc(g)}</h3><p class="ayuda">Marcá quién viene:</p>${
+  if (datos.error) { box.innerHTML = `<p>Este link no es válido. Revisá que esté completo o ${escribinos}.</p>`; return; }
+  if (!datos.abierto) { box.innerHTML = `<p>La confirmación ya cerró. Cualquier cambio, ${escribinos}.</p>`; return; }
+  const m = datos.miembros;
+  box.innerHTML = `<div class="grupo"><h3>${esc(datos.g)}</h3><p class="ayuda">Marcá quién viene:</p>${
     m.map((p, i) => `<div class="persona"><span>${esc(p.n)} ${esc(p.a)}</span><div class="opciones" role="group" aria-label="${esc(p.n)}">
       <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Va</button>
       <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No va</button></div></div>`).join("")
-  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button><button class="btn btn-sec" id="volver">← Volver</button></div>`;
+  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button></div>`;
   const listo = () => $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < m.length;
   listo();
   $$(".opcion", box).forEach(o => o.onclick = () => {
     $$(`.opcion[data-i="${o.dataset.i}"]`, box).forEach(x => x.setAttribute("aria-pressed", x === o));
     listo();
   });
-  $("#volver").onclick = volver;
   $("#confirmar").onclick = async () => {
     const respuestas = m.map((p, i) => ({fila: p.fila, asiste: $(`.opcion.si[data-i="${i}"]`, box).getAttribute("aria-pressed") === "true" ? "sí" : "no"}));
     $("#confirmar").disabled = true; $("#estado").textContent = "Guardando…";
     let r;
-    try { r = await api("guardar", {g, respuestas}); } catch { r = {}; }
+    try { r = await api({f: CODIGO, respuestas}); } catch { r = {}; }
     if (!r.ok) {
-      $("#estado").innerHTML = r.error === "cerrado" ? "La confirmación ya cerró." : `No se pudo guardar. Probá de nuevo o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.`;
+      $("#estado").innerHTML = r.error === "cerrado" ? "La confirmación ya cerró." : `No se pudo guardar. Probá de nuevo o ${escribinos}.`;
       $("#confirmar").disabled = false; return;
     }
     box.innerHTML = `<div><p class="script" style="font-size:2.6rem;color:var(--caramelo)">¡Gracias!</p>
       <p>Recibimos tu confirmación 💗💙</p><p class="ayuda">Si cambian los planes, podés modificarla hasta el 16 de enero.</p>
       <button class="btn btn-sec" id="otra" style="margin-top:1rem">Modificar respuesta</button></div>`;
-    $("#otra").onclick = () => mostrarGrupo(g);
+    $("#otra").onclick = mostrarFamilia;
   };
 }
-function volver(){ $("#paso-grupo").hidden = true; $("#paso-buscar").hidden = false; }
+mostrarFamilia();
 </script>
 </body>
 </html>
