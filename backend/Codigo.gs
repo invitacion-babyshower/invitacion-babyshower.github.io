@@ -2,9 +2,10 @@
  * API de la invitación: busca invitados y guarda confirmaciones en la hoja "Invitados".
  * Se pega en la planilla (Extensiones → Apps Script) y se implementa como "Aplicación web".
  *
- * Avisos opcionales por WhatsApp (CallMeBot): en Configuración del proyecto → Propiedades del script,
- * agregá WSP_TEL (ej. 5491126799971) y WSP_APIKEY (la clave que te manda CallMeBot).
- * El mail de aviso va siempre a la cuenta dueña del script.
+ * Avisos (Configuración del proyecto → Propiedades del script; los datos de contacto no van en el código, que es público):
+ * - El mail va siempre a la cuenta dueña del script. AVISO_MAILS: otros mails separados por coma.
+ * - WhatsApp (CallMeBot): WSP con "telefono:apikey" separados por coma (ej. 5491126799971:123456).
+ *   Cada teléfono activa CallMeBot por su cuenta y recibe su propia apikey.
  */
 const HOJA = "Invitados";
 const CORTE = new Date("2027-01-16T23:59:59-03:00"); // último momento para confirmar o cambiar
@@ -70,11 +71,14 @@ function guardar(d) {
 
 function avisar(g, cambios) {
   const texto = `Confirmación de ${g}:\n${cambios.join("\n")}`;
-  try { MailApp.sendEmail(Session.getEffectiveUser().getEmail(), `🧸 Confirmación: ${g}`, texto); } catch (err) { console.error(err); }
-  const prop = PropertiesService.getScriptProperties(), tel = prop.getProperty("WSP_TEL"), key = prop.getProperty("WSP_APIKEY");
-  if (tel && key) {
+  const prop = PropertiesService.getScriptProperties();
+  const lista = k => (prop.getProperty(k) || "").split(",").map(s => s.trim()).filter(Boolean);
+  const mails = [Session.getEffectiveUser().getEmail(), ...lista("AVISO_MAILS")];
+  try { MailApp.sendEmail(mails.join(","), `🧸 Confirmación: ${g}`, texto); } catch (err) { console.error(err); }
+  lista("WSP").forEach(par => {
+    const [tel, key] = par.split(":");
     try { UrlFetchApp.fetch(`https://api.callmebot.com/whatsapp.php?phone=${tel}&apikey=${key}&text=${encodeURIComponent(texto)}`); } catch (err) { console.error(err); }
-  }
+  });
 }
 
 const json = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
