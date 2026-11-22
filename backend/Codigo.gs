@@ -15,7 +15,7 @@
  */
 const HOJA = "Invitados", HOJA_LINKS = "Links", HOJA_HISTORIAL = "Historial";
 const SITIO = "https://invitacion-babyshower.github.io/";
-const CORTE = new Date("2027-01-16T23:59:59-03:00"); // último momento para confirmar o cambiar
+const CORTE = new Date("2027-01-03T23:59:59-03:00"); // último momento para confirmar o cambiar
 const MENSAJE = "¡Hola! 🧸🎈 Te compartimos la invitación al Baby Shower y Revelación de José y Johanna. Desde este link podés ver todos los detalles y confirmar tu asistencia:";
 
 function doGet(e) {
@@ -120,12 +120,15 @@ function generarLinks() {
   const nuevos = [...new Set(filas().map(p => p.g))].filter(g => !existentes.has(g));
   nuevos.forEach(g => {
     const codigo = Utilities.getUuid().replace(/-/g, "").slice(0, 12);
-    const link = `${SITIO}?f=${codigo}`;
-    const wa = `https://wa.me/?text=${encodeURIComponent(`${MENSAJE}\n${link}`)}`;
-    hoja.appendRow([g, codigo, link, ""]);
-    // Link en la celda (no fórmula HYPERLINK: su separador cambia según el idioma de la planilla)
-    hoja.getRange(hoja.getLastRow(), 4).setRichTextValue(SpreadsheetApp.newRichTextValue().setText("📲 Enviar por WhatsApp").setLinkUrl(wa).build());
+    hoja.appendRow([g, codigo, `${SITIO}?f=${codigo}`, ""]);
   });
+  // Rehace el botón de WhatsApp de todas las filas (si cambia MENSAJE, se actualiza sin tocar los códigos).
+  // api.whatsapp.com y no wa.me: la redirección de wa.me rompe los emojis (llegan como ��).
+  // Link en la celda (no fórmula HYPERLINK: su separador cambia según el idioma de la planilla)
+  const n = hoja.getLastRow() - 1;
+  if (n > 0) hoja.getRange(2, 4, n, 1).setRichTextValues(hoja.getRange(2, 3, n, 1).getValues().map(([link]) =>
+    [SpreadsheetApp.newRichTextValue().setText("📲 Enviar por WhatsApp")
+      .setLinkUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${MENSAJE}\n${link}`)}`).build()]));
   hoja.autoResizeColumns(1, 4);
   return nuevos.length;
 }
