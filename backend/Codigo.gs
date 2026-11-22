@@ -5,7 +5,8 @@
  *
  * Hojas:
  * - Invitados: grupo | nombre | apellido | asiste | actualizado
- * - Links: una fila por grupo con su código secreto, el link y un botón para mandarlo por WhatsApp (menú 🧸 Invitación → Generar links)
+ * - Links: una fila por grupo con su código secreto, el link, un botón para mandarlo por WhatsApp (menú 🧸 Invitación → Generar links)
+ *   y la fecha en que se mandó (la anota el panel: ver crearPanel)
  * - Historial: cada cambio de respuesta, con fecha
  *
  * Avisos (Configuración del proyecto → Propiedades del script; los datos de contacto no van en el código, que es público):
@@ -19,6 +20,7 @@ const CORTE = new Date("2027-01-03T23:59:59-03:00"); // último momento para con
 const MENSAJE = "¡Hola! 🧸🎈 Te compartimos la invitación al Baby Shower y Revelación de José y Johanna. Desde este link podés ver todos los detalles y confirmar tu asistencia:";
 
 function doGet(e) {
+  if (e.parameter.panel !== undefined) return panel(e.parameter.panel);
   const g = grupoDe(e.parameter.f);
   if (!g) return json({error: "codigo"});
   return json({g, abierto: new Date() <= CORTE, miembros: filas().filter(p => p.g === g).map(p => ({fila: p.fila, n: p.n, a: p.a, asiste: p.asiste}))});
@@ -127,10 +129,63 @@ function generarLinks() {
   // Link en la celda (no fórmula HYPERLINK: su separador cambia según el idioma de la planilla)
   const n = hoja.getLastRow() - 1;
   if (n > 0) hoja.getRange(2, 4, n, 1).setRichTextValues(hoja.getRange(2, 3, n, 1).getValues().map(([link]) =>
-    [SpreadsheetApp.newRichTextValue().setText("📲 Enviar por WhatsApp")
-      .setLinkUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${MENSAJE}\n${link}`)}`).build()]));
+    [SpreadsheetApp.newRichTextValue().setText("📲 Enviar por WhatsApp").setLinkUrl(waLink(link)).build()]));
   hoja.autoResizeColumns(1, 4);
   return nuevos.length;
+}
+
+const waLink = link => `https://api.whatsapp.com/send?text=${encodeURIComponent(`${MENSAJE}\n${link}`)}`;
+
+// ---------- Panel para mandar las invitaciones (celular) ----------
+// Link: <URL de la web app>?panel=<clave>. La clave vive en la propiedad PANEL (no en el código, que es público);
+// se crea con crearPanel. Quien tenga el link ve los links de todas las familias: compartirlo solo con quien manda.
+const panelOk = clave => !!clave && clave === PropertiesService.getScriptProperties().getProperty("PANEL");
+
+function crearPanel() {
+  const prop = PropertiesService.getScriptProperties();
+  if (!prop.getProperty("PANEL")) prop.setProperty("PANEL", Utilities.getUuid().replace(/-/g, ""));
+  console.log(`${ScriptApp.getService().getUrl()}?panel=${prop.getProperty("PANEL")}`);
+}
+
+function panel(clave) {
+  if (!panelOk(clave)) return HtmlService.createHtmlOutput("Link no válido.");
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+  const tz = Session.getScriptTimeZone();
+  const familias = libro().getSheetByName(HOJA_LINKS).getDataRange().getValues().slice(1).filter(r => r[0] && r[1]);
+  const items = familias.map(([g, codigo, link, , enviado]) => `
+    <li class="${enviado ? "ok" : ""}"><div><b>${esc(g)}</b><small>${enviado ? "✓ Enviada " + Utilities.formatDate(new Date(enviado), tz, "dd/MM HH:mm") : "Sin enviar"}</small></div>
+    <a href="${esc(waLink(link))}" target="_blank" onclick="marcar(this, '${esc(codigo)}')">📲 Enviar</a></li>`).join("");
+  const html = `<style>
+    body{font-family:system-ui,sans-serif;margin:0;padding:16px;background:#FBF6EF;color:#6B4E39}
+    h1{font-size:1.3rem;margin:0 0 4px} p{margin:0 0 16px;color:#86624A}
+    ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    li{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 14px rgba(107,78,57,.1)}
+    li div{display:grid;gap:2px} small{color:#86624A} li.ok{opacity:.6} li.ok small{color:#117A4B}
+    a{flex:none;background:#117A4B;color:#fff;text-decoration:none;font-weight:600;padding:12px 16px;border-radius:999px}
+  </style>
+  <h1>🧸 Invitaciones para mandar</h1>
+  <p>Tocá <b>Enviar</b>, elegí el contacto en WhatsApp y mandalo. Queda marcada como enviada para todos.</p>
+  <ul>${items}</ul>
+  <script>
+    function marcar(a, codigo){
+      const li = a.closest("li");
+      google.script.run.withSuccessHandler(t => { li.classList.add("ok"); li.querySelector("small").textContent = "✓ Enviada " + t; })
+        .marcarEnviado(${JSON.stringify(clave)}, codigo);
+    }
+  </script>`;
+  return HtmlService.createHtmlOutput(html).setTitle("Invitaciones").addMetaTag("viewport", "width=device-width, initial-scale=1");
+}
+
+// Lo llama el panel al tocar Enviar: anota la fecha en la columna E de Links
+function marcarEnviado(clave, codigo) {
+  if (!panelOk(clave)) throw new Error("clave");
+  const hoja = libro().getSheetByName(HOJA_LINKS);
+  if (!hoja.getRange("E1").getValue()) hoja.getRange("E1").setValue("enviado").setFontWeight("bold");
+  const i = hoja.getDataRange().getValues().findIndex(r => String(r[1]).trim() === String(codigo));
+  if (i < 1) throw new Error("codigo");
+  const ahora = new Date();
+  hoja.getRange(i + 1, 5).setValue(ahora);
+  return Utilities.formatDate(ahora, Session.getScriptTimeZone(), "dd/MM HH:mm");
 }
 
 const json = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);

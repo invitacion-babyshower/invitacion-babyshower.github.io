@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invitaciones</title>
+<!-- Link corto al panel para mandar invitaciones: /enviar#<clave>. La clave va en el # (no llega a ningún servidor
+     ni queda en este repo público); el panel la valida contra la propiedad PANEL del Apps Script. -->
+<script>
+location.replace("https://script.google.com/macros/s/AKfycbyik7RRae_MDINvaMWRDjBbUh6p2ZVdEwUQLHStW3SgtvfNhOK0JuXBqGKUOaSZIwjAmA/exec?panel=" + encodeURIComponent(location.hash.slice(1)));
+</script>
+<p style="font-family:system-ui;padding:16px">Abriendo…</p>
