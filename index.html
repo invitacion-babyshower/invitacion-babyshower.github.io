@@ -239,9 +239,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
         <p class="fecha split">Domingo 17 de enero</p>
         <p class="hora split">de 14 a 17 hs</p>
         <p class="lugar split">Gemma Eventos<br>Av. Caseros 3671</p>
-        <a class="btn btn-sec aparece" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Gemma+Eventos+Av.+Caseros+3671">Cómo llegar</a>
-        <a class="btn btn-sec aparece" id="agendar" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Baby+Shower+y+Revelaci%C3%B3n+de+Jos%C3%A9+y+Johanna+%F0%9F%A7%B8&amp;dates=20270117T140000/20270117T170000&amp;ctz=America%2FArgentina%2FBuenos_Aires&amp;location=Gemma+Eventos%2C+Av.+Caseros+3671&amp;details=%C2%BFSer%C3%A1+ni%C3%B1a+o+ni%C3%B1o%3F+%C2%A1Te+esperamos%21%0ATeam+Girl%3A+pa%C3%B1ales+%C2%B7+Team+Boy%3A+toallitas+h%C3%BAmedas%0AInvitaci%C3%B3n%3A+https%3A%2F%2Finvitacion-babyshower.github.io">Agendar</a>
-        <div class="cuenta aparece" aria-label="Cuenta regresiva">
+        <a class="btn btn-sec aparece" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Gemma+Eventos+Av.+Caseros+3671">Cómo llegar</a>        <div class="cuenta aparece" aria-label="Cuenta regresiva">
           <div><b id="d">--</b><small>días</small></div><div><b id="h">--</b><small>horas</small></div><div><b id="m">--</b><small>min</small></div>
         </div>
       </div>
@@ -285,8 +283,9 @@ history.scrollRestoration = "manual";
 if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 scrollTo(0, 0);
 // iPhone/iPad: el archivo .ics abre "Agregar al calendario" del propio teléfono; el resto, Google Calendar
-if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
-  document.getElementById("agendar").href = "evento.ics";
+const AGENDA = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  ? "evento.ics"
+  : "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Baby+Shower+y+Revelaci%C3%B3n+de+Jos%C3%A9+y+Johanna+%F0%9F%A7%B8&dates=20270117T140000/20270117T170000&ctz=America%2FArgentina%2FBuenos_Aires&location=Gemma+Eventos%2C+Av.+Caseros+3671&details=%C2%BFSer%C3%A1+ni%C3%B1a+o+ni%C3%B1o%3F+%C2%A1Te+esperamos%21%0ATeam+Girl%3A+pa%C3%B1ales+%C2%B7+Team+Boy%3A+toallitas+h%C3%BAmedas%0AInvitaci%C3%B3n%3A+https%3A%2F%2Finvitacion-babyshower.github.io";
 // Al volver con "atrás" el navegador restaura la página tal cual quedó: recargarla muestra la portada de nuevo
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 const WSP = "5491165865475"; // Johanna: recibe las consultas
@@ -465,7 +464,8 @@ async function mostrarFamilia(){
     m.map((p, i) => `<div class="persona"><span>${esc(p.n)} ${esc(p.a)}</span><div class="opciones" role="group" aria-label="${esc(p.n)}">
       <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Sí asiste</button>
       <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No asiste</button></div></div>`).join("")
-  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button></div>`;
+  }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button><br>
+    <a class="btn btn-sec" href="${AGENDA}" target="_blank" rel="noopener" style="margin-top:.8rem">📅 Agendar en mi calendario</a></div>`;
   const listo = () => $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < m.length;
   listo();
   $$(".opcion", box).forEach(o => o.onclick = () => {
@@ -483,6 +483,7 @@ async function mostrarFamilia(){
     }
     box.innerHTML = `<div><p class="script" style="font-size:2.6rem;color:var(--caramelo)">¡Gracias!</p>
       <p>Recibimos tu confirmación 💗💙</p><p class="ayuda">Si cambian los planes, podés modificarla hasta el 3 de enero.</p>
+      ${respuestas.some(r => r.asiste === "sí") ? `<a class="btn" href="${AGENDA}" target="_blank" rel="noopener" style="margin-top:1rem">📅 Agendar en mi calendario</a><br>` : ""}
       <button class="btn btn-sec" id="otra" style="margin-top:1rem">Modificar respuesta</button></div>`;
     $("#otra").onclick = mostrarFamilia;
   };
