@@ -459,8 +459,8 @@ async function mostrarFamilia(){
   const m = datos.miembros;
   box.innerHTML = `<div class="grupo"><h3>${esc(datos.g)}</h3><p class="ayuda">Marcá quién viene:</p>${
     m.map((p, i) => `<div class="persona"><span>${esc(p.n)} ${esc(p.a)}</span><div class="opciones" role="group" aria-label="${esc(p.n)}">
-      <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Va</button>
-      <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No va</button></div></div>`).join("")
+      <button class="opcion si" aria-pressed="${p.asiste === "sí"}" data-i="${i}">Sí asiste</button>
+      <button class="opcion no" aria-pressed="${p.asiste === "no"}" data-i="${i}">No asiste</button></div></div>`).join("")
   }<p class="ayuda" id="estado" aria-live="polite"></p><button class="btn" id="confirmar">Confirmar</button></div>`;
   const listo = () => $("#confirmar").disabled = $$('.opcion[aria-pressed="true"]', box).length < m.length;
   listo();

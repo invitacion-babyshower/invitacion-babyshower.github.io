@@ -21,6 +21,7 @@ const MENSAJE = "¡Hola! 🧸🎈 Te compartimos la invitación al Baby Shower y
 
 function doGet(e) {
   if (e.parameter.panel !== undefined) return panel(e.parameter.panel);
+  if (e.parameter.asistencia !== undefined) return asistencia(e.parameter.asistencia);
   const g = grupoDe(e.parameter.f);
   if (!g) return json({error: "codigo"});
   return json({g, abierto: new Date() <= CORTE, miembros: filas().filter(p => p.g === g).map(p => ({fila: p.fila, n: p.n, a: p.a, asiste: p.asiste}))});
@@ -147,9 +148,10 @@ function crearPanel() {
   console.log(`${ScriptApp.getService().getUrl()}?panel=${prop.getProperty("PANEL")}`);
 }
 
+const esc = t => String(t).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+
 function panel(clave) {
   if (!panelOk(clave)) return HtmlService.createHtmlOutput("Link no válido.");
-  const esc = t => String(t).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   const tz = Session.getScriptTimeZone();
   const familias = libro().getSheetByName(HOJA_LINKS).getDataRange().getValues().slice(1).filter(r => r[0] && r[1]);
   const items = familias.map(([g, codigo, link, , enviado]) => `
@@ -174,6 +176,43 @@ function panel(clave) {
     }
   </script>`;
   return HtmlService.createHtmlOutput(html).setTitle("Invitaciones").addMetaTag("viewport", "width=device-width, initial-scale=1");
+}
+
+// ---------- Quién viene (celular) ----------
+// Link: <URL de la web app>?asistencia=<clave>, misma clave PANEL. Solo lectura: la hoja Invitados agrupada por familia.
+function asistencia(clave) {
+  if (!panelOk(clave)) return HtmlService.createHtmlOutput("Link no válido.");
+  const personas = filas(), grupos = new Map();
+  personas.forEach(p => (grupos.get(p.g) || grupos.set(p.g, []).get(p.g)).push(p));
+  const cuenta = l => {
+    const si = l.filter(p => p.asiste === "sí").length, no = l.filter(p => p.asiste === "no").length;
+    return {si, no, pend: l.length - si - no};
+  };
+  const estado = a => a === "sí" ? ["si", "✅ Asiste"] : a === "no" ? ["no", "❌ No asiste"] : ["pend", "⏳ Sin responder"];
+  const t = cuenta(personas);
+  const familias = [...grupos].map(([g, l]) => {
+    const c = cuenta(l);
+    return `<section><h2>${esc(g)}</h2><small>${c.si} asisten · ${c.no} no · ${c.pend} sin responder</small><ul>${l.map(p => {
+      const [k, txt] = estado(p.asiste);
+      return `<li class="${k}"><span>${esc(p.n)} ${esc(p.a)}</span><b>${txt}</b></li>`;
+    }).join("")}</ul></section>`;
+  }).join("");
+  const html = `<style>
+    body{font-family:system-ui,sans-serif;margin:0;padding:16px;background:#FBF6EF;color:#6B4E39}
+    h1{font-size:1.3rem;margin:0 0 12px}
+    .totales{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+    .totales div{background:#fff;border-radius:14px;padding:10px;text-align:center;box-shadow:0 4px 14px rgba(107,78,57,.1)}
+    .totales b{display:block;font-size:1.6rem}
+    section{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 4px 14px rgba(107,78,57,.1)}
+    h2{font-size:1.05rem;margin:0} small{color:#86624A}
+    ul{list-style:none;padding:0;margin:8px 0 0}
+    li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #F1E7DB}
+    li b{flex:none;font-weight:600} .si b{color:#117A4B} .no b{color:#B3261E} .pend b{color:#86624A;font-weight:400}
+  </style>
+  <h1>🧸 ¿Quién viene?</h1>
+  <div class="totales"><div><b>${t.si}</b>✅ Asisten</div><div><b>${t.no}</b>❌ No asisten</div><div><b>${t.pend}</b>⏳ Sin responder</div></div>
+  ${familias}`;
+  return HtmlService.createHtmlOutput(html).setTitle("Asistencia").addMetaTag("viewport", "width=device-width, initial-scale=1");
 }
 
 // Lo llama el panel al tocar Enviar: anota la fecha en la columna E de Links
