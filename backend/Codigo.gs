@@ -81,6 +81,6 @@ const json = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType
 
 // Prueba rápida desde el editor: Ejecutar → probar
 function probar() {
-  console.assert(buscar("ab").length === 0, "mínimo 3 letras");
-  console.log(buscar("jose"));
+  if (buscar("ab").length !== 0) throw new Error("mínimo 3 letras"); // Apps Script no tiene console.assert
+  console.log(JSON.stringify(buscar("jose")), JSON.stringify(buscar("PAUCAR").length));
 }

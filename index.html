@@ -303,12 +303,6 @@ scrollTo(0, 0);
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 const WSP = "5491126799971";
 const EVENTO = new Date("2027-01-17T14:00:00-03:00");
-// Lista de ejemplo: solo se usa mientras API esté vacía
-const DEMO = [
-  {g:"Familia Alfaro", n:"José", a:"Alfaro"}, {g:"Familia Alfaro", n:"Johanna", a:"Rivas"},
-  {g:"Familia Pérez", n:"María", a:"Pérez"}, {g:"Familia Pérez", n:"Juan", a:"Pérez"}, {g:"Familia Pérez", n:"Sofía", a:"Pérez"},
-  {g:"Familia Gómez", n:"Lucía", a:"Gómez"}
-];
 gsap.set(".n2", {scaleX: -1}); // GSAP toma el control del transform por el parallax
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, c = document) => c.querySelector(s);
@@ -425,25 +419,22 @@ $("#wsp").href = `https://wa.me/${WSP}?text=${wspMsg}`;
 
 // ---------- Confirmación ----------
 // La búsqueda y el guardado los hace Apps Script sobre la planilla (backend/Codigo.gs): el navegador nunca recibe la lista completa.
-const API = ""; // URL de la aplicación web de Apps Script (termina en /exec)
+const API = "https://script.google.com/macros/s/AKfycbyik7RRae_MDINvaMWRDjBbUh6p2ZVdEwUQLHStW3SgtvfNhOK0JuXBqGKUOaSZIwjAmA/exec"; // aplicación web de Apps Script
 const norm = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 const esc = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-// shortcut: sin API usa la lista de ejemplo en memoria; se borra cuando la URL de Apps Script esté cargada
-const demo = {
-  buscar: q => { const toks = norm(q).split(/\s+/); return norm(q).replace(/\s/g, "").length < 3 ? [] : DEMO.filter(p => toks.every(t => norm(p.n + " " + p.a).includes(t))); },
-  grupo: g => ({abierto: true, miembros: DEMO.map((p, i) => ({...p, fila: i + 2, asiste: p.asiste || ""})).filter(p => p.g === g)}),
-  guardar: d => { d.respuestas.forEach(r => DEMO[r.fila - 2].asiste = r.asiste); return {ok: true}; }
-};
-console.assert(demo.buscar("jose").length === 1 && demo.buscar("PEREZ").length === 3 && demo.buscar("ma").length === 0 && demo.buscar("jose alf").length === 1, "buscador");
-
-async function api(accion, datos){
-  if (!API) return demo[accion](datos);
-  const r = accion === "guardar"
-    ? await fetch(API, {method: "POST", body: JSON.stringify(datos)}) // text/plain: Apps Script no acepta preflight CORS
-    : await fetch(`${API}?accion=${accion}&${accion === "buscar" ? "q" : "g"}=${encodeURIComponent(datos)}`);
-  if (!r.ok) throw new Error(r.status);
-  return r.json();
+async function api(accion, datos, intento = 1){
+  try {
+    const r = accion === "guardar"
+      ? await fetch(API, {method: "POST", body: JSON.stringify(datos)}) // text/plain: Apps Script no acepta preflight CORS
+      : await fetch(`${API}?accion=${accion}&${accion === "buscar" ? "q" : "g"}=${encodeURIComponent(datos)}`);
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } catch (e) {
+    // Apps Script a veces falla en la primera llamada después de un rato sin uso: las lecturas se reintentan una vez
+    if (accion !== "guardar" && intento < 2) return api(accion, datos, intento + 1);
+    throw e;
+  }
 }
 
 const sinConexion = `<p class="ayuda">No pudimos conectarnos 😕 Probá de nuevo en un rato o <a href="https://wa.me/${WSP}" target="_blank" rel="noopener">escribinos por WhatsApp</a>.</p>`;
