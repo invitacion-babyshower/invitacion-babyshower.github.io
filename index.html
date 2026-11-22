@@ -144,6 +144,7 @@ button,input{font:inherit;color:inherit}
 .buscador{display:grid;gap:.4rem;text-align:left}
 .buscador input{width:100%;min-height:52px;padding:.75rem 1rem;border-radius:16px;border:2px solid var(--beige);background:#fff;font-size:1.05rem}
 .ayuda{font-size:.9rem;color:var(--caramelo)}
+.aviso{font-size:.92rem;font-style:italic;color:var(--cacao);padding:.65rem .9rem;border-radius:14px;background:rgba(235,217,195,.45)}
 .resultados{display:grid;gap:.5rem}
 .resultado{display:flex;justify-content:space-between;align-items:center;gap:.5rem;min-height:52px;padding:.7rem 1rem;border-radius:14px;border:2px solid transparent;background:#fff;cursor:pointer;text-align:left;box-shadow:0 3px 10px rgba(107,78,57,.08)}
 .resultado:hover{border-color:var(--celeste)}
@@ -265,6 +266,7 @@ footer{padding:2rem 1rem 5rem;text-align:center;font-size:.9rem;color:var(--cara
     <div class="panel">
       <h2>Confirmá tu asistencia</h2>
       <p>Buscate en la lista y confirmá también por tu familia.</p>
+      <p class="aviso">Invitación personal e intransferible. No se permiten acompañantes adicionales, incluidos niños.</p>
       <div id="paso-buscar" class="buscador">
         <label for="q">Tu nombre y apellido</label>
         <input id="q" type="search" autocomplete="off" placeholder="Ej: María Pérez" aria-describedby="ayuda">
